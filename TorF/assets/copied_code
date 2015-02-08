@@ -1,0 +1,584 @@
+package com.amine.torf;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+
+import com.amine.torf.helpers.DataBaseHelper;
+import com.amine.torf.helpers.DataManager;
+import com.amine.torf.pojo.QuizPojo;
+import com.amine.torf.ui.AutofitTextView;
+import com.andtinder.model.CardModel;
+import com.andtinder.view.CardContainer;
+import com.andtinder.view.SimpleCardStackAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+
+public class Timer_questions extends Activity implements
+		TextToSpeech.OnInitListener, View.OnClickListener {
+	String que, opt1, opt2, answer, category;
+	int rightans = 0;
+	int wrongans = 0;
+	int i = 0;
+	String right, wrong, next;
+	private TextToSpeech mText2Speech;
+	DataBaseHelper db;
+	TextView taOpt1, taOpt2, txtcategoryname, tv, tanoofque,
+			lifeline;
+	AutofitTextView taQue;
+	static int currentQuestion = 0;
+	ToggleButton tgbtn;
+	MediaPlayer mp;
+	List<QuizPojo> getquestions = null;
+	QuizPojo cn = null;
+	MyCounter timer = null;
+	Setting_preference pref;
+	String no_of_questions, strtimer;
+	long savedtimer;
+	int totalQueLen;
+	boolean cbsound, cbvibrate, cbtimer;
+	Vibrator vibe;
+	String categoryname;
+	int mistake = DataManager.mistake;
+	int numofquestions = DataManager.noofquestions;
+	private AdView adView;
+	Button  btnpass, btntimer;
+	private static final String AD_UNIT_ID = DataManager.admobid;
+	TextView[] btn1, btn2;
+	//Random rand = new Random();
+	boolean fifty = false, pass = false, time = false;
+	Typeface normal, bold;
+	LinearLayout lltimer;
+	////swipe card
+	private CardContainer mCardContainer;
+	final static int INTERVAL = 800; // 1 second
+	boolean whichColor = true;
+	private static int count = 0;
+
+	@SuppressLint("DefaultLocale")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.quizscreen);
+
+		
+		/////////swipe 
+		
+		
+		
+		
+		//linearLayout = (LinearLayout) findViewById(R.id.layoutfull);
+
+		mCardContainer = (CardContainer) findViewById(R.id.layoutview);
+		//Resources r = getResources();
+
+		SimpleCardStackAdapter adapter = new SimpleCardStackAdapter(this);
+
+		adapter.add(new CardModel("Title1 dvdlkvnfd df, dfpgvd fvfoif ?",
+				"Description goes here"));
+
+		adapter.add(new CardModel(
+				"Description goes here Description goes hereDescription goes here ?",
+				"Description goes here"));
+
+		adapter.add(new CardModel("Description goes here Description goes her",
+				"Description goes here"));
+
+		CardModel cardModel = new CardModel(
+				"Title1 \n fzfzfzfeffefzefzefeefezfzefe fezfzefzefeffzefezfe efezfzefzefefzeuh ???",
+				"Description goes here");
+		cardModel.setOnClickListener(new CardModel.OnClickListener() {
+			@Override
+			public void OnClickListener() {
+				Log.i("Swipeable Cards", "I am pressing the card");
+			}
+		});
+
+		cardModel
+				.setOnCardDimissedListener(new CardModel.OnCardDimissedListener() {
+					@Override
+					public void onTrue() {
+						Log.i("Swipeable Cards", "True");
+						count++;
+						//linearLayout.setBackgroundColor(Color.GREEN);
+
+						new Thread(new Runnable() {
+							public void run() {
+								while (true) {
+									try {
+										Thread.sleep(INTERVAL);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								//	updateColor();
+
+								}
+							}
+						}).start();
+					}
+
+					@Override
+					public void onFalse() {
+						Log.i("Swipeable Cards", "False");
+						count--;
+						//linearLayout.setBackgroundColor(Color.RED);
+
+						new Thread(new Runnable() {
+							public void run() {
+								while (true) {
+									try {
+										Thread.sleep(INTERVAL);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+									//updateColor();
+
+								}
+							}
+						}).start();
+
+					}
+				});
+
+		adapter.add(cardModel);
+
+		mCardContainer.setAdapter(adapter);
+		
+		
+		normal = Typeface.createFromAsset(getAssets(), "normal.ttf");
+		bold = Typeface.createFromAsset(getAssets(), "bold.ttf");
+
+		tv = (TextView) findViewById(R.id.tv);
+		tv.setText(" ");
+		db = new DataBaseHelper(getApplicationContext());
+
+		pref = new Setting_preference(getApplicationContext());
+
+		strtimer = DataManager.timer;
+		vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+		savedtimer = Long.parseLong(strtimer);
+		categoryname = getIntent().getStringExtra("categoryname");
+
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(Timer_questions.this);
+
+		tgbtn = (ToggleButton) this.findViewById(R.id.toggleButton2);
+		cbsound = prefs.getBoolean("cbsound", true);
+		cbvibrate = prefs.getBoolean("cbvibrate", true);
+		cbtimer = prefs.getBoolean("cbtimer", true);
+		btntimer = (Button) this.findViewById(R.id.btntimer);
+		lltimer = (LinearLayout) this.findViewById(R.id.lltimer);
+		tgbtn.setText(null);
+		tgbtn.setTextOn(null);
+		tgbtn.setTextOff(null);
+		if (cbsound) {
+			tgbtn.setChecked(true);
+		}
+
+		if (cbtimer) {
+			timer = new MyCounter(savedtimer * 1000, 1000);
+			timer.start();
+		} else {
+			tv.setVisibility(View.INVISIBLE);
+			btntimer.setVisibility(View.GONE);
+			lltimer.setVisibility(View.GONE);
+		}
+		mText2Speech = new TextToSpeech(Timer_questions.this,
+				Timer_questions.this);
+
+		currentQuestion = 0;
+		rightans = 0;
+		wrongans = 0;
+		taQue = (AutofitTextView) this.findViewById(R.id.taque);
+		taOpt1 = (TextView) this.findViewById(R.id.taOpt5);
+		taOpt2 = (TextView) this.findViewById(R.id.taOpt6);
+		lifeline = (TextView) this.findViewById(R.id.txtlife);
+		btnpass = (Button) this.findViewById(R.id.btnskip);
+
+		txtcategoryname = (TextView) this.findViewById(R.id.txtcategoryname);
+		tanoofque = (TextView) this.findViewById(R.id.tanoofque1);
+
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		right = "Right answer";
+		wrong = "Wrong answer";
+		next = "Next Question";
+		taOpt1.setOnClickListener(this);
+		taOpt2.setOnClickListener(this);
+		
+		tanoofque.setTypeface(normal);
+		taOpt1.setTypeface(bold);
+		taOpt2.setTypeface(bold);
+		
+		lifeline.setTypeface(bold);
+		btntimer.setTypeface(bold);
+		btnpass.setTypeface(bold);
+		taQue.setTypeface(bold);
+		txtcategoryname.setTypeface(normal);
+		tv.setTypeface(bold);
+		totalQueLen = db.getcategorycount(categoryname);
+
+		getquestions = db.getquestion(categoryname);
+
+		getquestionsanswers(currentQuestion);
+
+		txtcategoryname.setText(categoryname.toUpperCase());
+		TextView[] arr1 = { taOpt2, taOpt1 };
+		TextView[] arr2 = { taOpt1, taOpt2, };
+		btn1 = arr1;
+		btn2 = arr2;
+		
+		Log.w("options 1", taOpt1.getText().toString());
+		Log.w("options 2", taOpt2.getText().toString());
+		
+		
+
+		
+		btntimer.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				if (cbtimer) {
+					time = true;
+					long newtime = 16000;
+					timer.cancel();
+					timer = new MyCounter(newtime, 1000);
+					timer.start();
+					btntimer.setVisibility(View.INVISIBLE);
+				}
+			}
+		});
+
+		btnpass.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				pass = true;
+				nextquestion(0);
+				btnpass.setVisibility(View.INVISIBLE);
+			}
+		});
+
+		lifeline.setText("Life : " + mistake);
+
+		adView = new AdView(this);
+
+		adView.setAdSize(AdSize.BANNER);
+		adView.setAdUnitId(AD_UNIT_ID);
+		AdRequest adRequest = new AdRequest.Builder().build();
+
+		adView.loadAd(adRequest);
+		LinearLayout ll = (LinearLayout) findViewById(R.id.ad);
+		ll.addView(adView);
+	}
+
+	@Override
+	public void onClick(View v1) {
+
+		if (cbtimer) {
+			timer.cancel();
+		}
+		TextView tmp = (TextView) v1;
+		String sel = tmp.getText().toString();
+
+		selectanswer(0, tmp, sel);
+	}
+
+	public void selectanswer(int SPLASHTIME, final TextView tmp,
+			final String sel) {
+
+		if (sel.equals(answer)) {
+
+			tmp.setBackgroundResource(R.drawable.green);
+			tmp.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+					R.drawable.right_icon, 0);
+			vibrate();
+			if (tgbtn.isChecked()) {
+				audio(right);
+			}
+			rightans++;
+			nextquestion(1000);
+		} else {
+
+			tmp.setBackgroundResource(R.drawable.red);
+			tmp.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+					R.drawable.wrong_icon, 0);
+
+			if (answer.equals(taOpt1.getText().toString())) {
+				taOpt1.setBackgroundResource(R.drawable.green);
+				taOpt1.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+						R.drawable.right_icon, 0);
+
+			}
+			if (answer.equals(taOpt2.getText().toString())) {
+				taOpt2.setBackgroundResource(R.drawable.green);
+				taOpt2.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+						R.drawable.right_icon, 0);
+
+			}
+		
+			wrongans++;
+			if (tgbtn.isChecked()) {
+
+				audio(wrong);
+			}
+
+			vibrate();
+			mistake--;
+			lifeline.setText("Life : " + mistake);
+			nextquestion(4000);
+		}
+
+		taOpt1.setClickable(false);
+		taOpt2.setClickable(false);
+		
+
+	}
+
+	public void nextquestion(int SPLASHTIME) {
+
+		if (cbtimer) {
+			timer.cancel();
+		}
+		Handler handler = new Handler();
+
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+
+				db.close();
+				currentQuestion++;
+
+				if (mistake > 0) {
+
+					if (currentQuestion < totalQueLen) {
+						if (cbtimer) {
+							timer = new MyCounter(savedtimer * 1000, 1000);
+							timer.start();
+						}
+						getquestionsanswers(currentQuestion);
+						if (tgbtn.isChecked()) {
+							audio(next);
+						}
+
+					} else {
+
+						if (cbtimer) {
+							timer.cancel();
+						}
+						Intent iScore = new Intent(Timer_questions.this,
+								Score.class);
+						iScore.putExtra("rightans", rightans);
+						iScore.putExtra("totalques", totalQueLen);
+						iScore.putExtra("category", category);
+						finish();
+						startActivity(iScore);
+
+					}
+				} else {
+					if (cbtimer) {
+						timer.cancel();
+					}
+					Intent iScore = new Intent(Timer_questions.this,
+							Score.class);
+					iScore.putExtra("rightans", rightans);
+					iScore.putExtra("totalques", totalQueLen);
+					iScore.putExtra("category", category);
+					finish();
+					startActivity(iScore);
+				}
+
+			}
+
+		}, SPLASHTIME);
+	}
+
+	@Override
+	public void onInit(int status) {
+
+		if (status == TextToSpeech.SUCCESS) {
+			mText2Speech.setLanguage(Locale.getDefault());
+		}
+
+	}
+
+	public void audio(String message) {
+		if (cbsound) {
+			mText2Speech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+		}
+	}
+
+	public void vibrate() {
+		if (cbvibrate) {
+			vibe.vibrate(700);
+		}
+	}
+
+	public void getquestionsanswers(int index) {
+		cn = getquestions.get(currentQuestion);
+		que = cn.get_question();
+
+		try {
+			opt1 = new String(cn.get_option1().getBytes("UTF-8"));
+			opt2 = new String(cn.get_option2().getBytes("UTF-8"));
+			
+			answer = new String(cn.get_answer().getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		setCurrentQuestion();
+
+	}
+
+	public void setCurrentQuestion() {
+
+		try {
+
+			i++;
+			String noofque = "Question No. " + i + " out of " + totalQueLen;
+			tanoofque.setText(noofque);
+			taOpt1.setVisibility(View.VISIBLE);
+			taOpt2.setVisibility(View.VISIBLE);
+		
+			taOpt1.setClickable(true);
+			taOpt2.setClickable(true);
+			
+
+			ArrayList<String> optionlist = new ArrayList<String>();
+
+			optionlist.add(opt1);
+			optionlist.add(opt2);
+			
+			Collections.shuffle(optionlist);
+			taOpt1.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+			taOpt2.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+			
+			taOpt1.setTextColor(Color.BLACK);
+			taOpt2.setTextColor(Color.BLACK);
+			
+			taOpt1.setBackgroundResource(R.drawable.normal);
+			taOpt2.setBackgroundResource(R.drawable.normal);
+			
+			taQue.setText(que);
+			taOpt1.setText(optionlist.get(0).toString());
+			taOpt2.setText(optionlist.get(1).toString());
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public class MyCounter extends CountDownTimer {
+
+		public MyCounter(long millisInFuture, long countDownInterval) {
+			super(millisInFuture, countDownInterval);
+		}
+
+		@Override
+		public void onFinish() {
+
+			mistake--;
+			lifeline.setText("Life : " + mistake);
+			nextquestion(1000);
+
+		}
+
+		@SuppressLint("UseValueOf")
+		@Override
+		public void onTick(long millisUntilFinished) {
+
+			Integer milisec = new Integer(
+					new Double(millisUntilFinished).intValue());
+			Integer cd_secs = milisec / 1000;
+
+			Integer seconds = (cd_secs % 3600) % 60;
+
+			tv.setText("Timer  : " + String.format("%02d", seconds));
+		}
+
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (cbtimer) {
+			timer.cancel();
+		}
+		new AlertDialog.Builder(this)
+				.setTitle("Really Exit?")
+				.setMessage("Do you want to leave this Test?")
+				.setNegativeButton(android.R.string.no, null)
+				.setPositiveButton(android.R.string.yes,
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface arg0, int arg1) {
+
+								if (cbtimer) {
+									timer.cancel();
+								}
+								int totalQueLen = db.getContactsCount();
+								Intent i = new Intent(Timer_questions.this,
+										Score.class);
+								i.putExtra("rightans", rightans);
+								i.putExtra("totalques", totalQueLen);
+								i.putExtra("category", category);
+								finish();
+								startActivity(i);
+							}
+						}).create().show();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (cbtimer) {
+			timer.cancel();
+
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (cbtimer) {
+			timer.cancel();
+		}
+	}
+
+}

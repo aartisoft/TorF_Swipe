@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TorF</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="admobid">a15377b5f8e45f8</string>
+    <string name="feedbackalert">Are you Happy With our Application?</string>
+    <string name="feedbackyes">Yes? Rate My App</string>
+    <string name="feedbackno">No? Send Suggetions</string>
+    <string name="share">Share with your friends</string>
+    <string name="play">PLAY</string>
+    <string name="highestscore">Highest Score</string>
+    <string name="feedback">FEEDBACK</string>
+    <string name="home">HOME</string>
+    <string name="sign_in_why">Sign in with Google to share your scores and achievements with your friends.</string>
+    <string name="your_progress_will_be_uploaded">Your existing achievements and score will be uploaded shortly.</string>
+
+</resources>
