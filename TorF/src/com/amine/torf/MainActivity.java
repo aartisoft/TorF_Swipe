@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener {
 	String mGreeting = "Hello, anonymous user (not signed in)";
 
-	TextView txtplay, txtfeedback, txthighscore, txtheader, signOutButton;
+	TextView txtplay, txtfeedback, txthighscore, txtheader;
 	Button btnexit;
 	final private static int DIALOG_LOGIN = 1;
 	Setting_preference setuser;
@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	int ratecounter;
 
 	private GoogleApiClient mGoogleApiClient;
-	private View signInButton;
+	private View signInButton, signOutButton;
 	private boolean mResolvingConnectionFailure = false;
 
 	// Has the user clicked the sign-in button?
@@ -102,7 +102,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		txthighscore = (TextView) findViewById(R.id.txthighscore);
 		txtheader = (TextView) findViewById(R.id.txtheader);
 		signInButton = (View) findViewById(R.id.sign_in_button);
-		signOutButton = (TextView) findViewById(R.id.sign_out_button);
+		signOutButton = (View) findViewById(R.id.sign_out_button);
 
 		txtheader.setTypeface(bold);
 		btnsetting = (Button) findViewById(R.id.btnsetting);
