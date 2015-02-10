@@ -1,10 +1,10 @@
 package com.amine.torf.helpers;
 
 
-import com.amine.torf.R;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.amine.torf.R;
 
 public class PrefsActivity extends PreferenceActivity{
 	 

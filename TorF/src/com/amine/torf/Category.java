@@ -2,7 +2,6 @@ package com.amine.torf;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONArray;
 
@@ -13,16 +12,12 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.amine.torf.helpers.DataBaseHelper;
 import com.amine.torf.helpers.DataManager;
-import com.amine.torf.pojo.QuizPojo;
 import com.amine.torf.ui.ExpandedListView;
 
 public class Category extends Activity {
@@ -46,11 +41,19 @@ public class Category extends Activity {
 	boolean cbonline;
 	TextView txtheader;
 
+	private boolean isFirstRun;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_categoery_new);
 		db = new DataBaseHelper(getApplicationContext());
+
+		isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+				.getBoolean("isFirstRun", true);
+
+		getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+				.putBoolean("isFirstRun", false).commit();
 
 		normal = Typeface.createFromAsset(getAssets(), "normal.ttf");
 		bold = Typeface.createFromAsset(getAssets(), "bold.ttf");
@@ -77,7 +80,11 @@ public class Category extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Category.this, ShowCase.class);
+				Intent i = new Intent();
+				if (isFirstRun) {
+					i = new Intent(Category.this, ShowCase.class);
+				} else
+					i = new Intent(Category.this, Timer_questions.class);
 				i.putExtra("categoryname", "Movies & TV Shows");
 				finish();
 				startActivity(i);
@@ -90,7 +97,11 @@ public class Category extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Category.this, ShowCase.class);
+				Intent i = new Intent();
+				if (isFirstRun) {
+					i = new Intent(Category.this, ShowCase.class);
+				} else
+					i = new Intent(Category.this, Timer_questions.class);
 				i.putExtra("categoryname", "General Knowledge");
 				finish();
 				startActivity(i);
@@ -103,7 +114,11 @@ public class Category extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Category.this, ShowCase.class);
+				Intent i = new Intent();
+				if (isFirstRun) {
+					i = new Intent(Category.this, ShowCase.class);
+				} else
+					i = new Intent(Category.this, Timer_questions.class);
 				i.putExtra("categoryname", "Music");
 				finish();
 				startActivity(i);
@@ -116,11 +131,14 @@ public class Category extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Category.this, ShowCase.class);
+				Intent i = new Intent();
+				if (isFirstRun) {
+					i = new Intent(Category.this, ShowCase.class);
+				} else
+					i = new Intent(Category.this, Timer_questions.class);
 				i.putExtra("categoryname", "Sports");
 				finish();
 				startActivity(i);
-
 			}
 
 		});

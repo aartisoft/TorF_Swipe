@@ -3,13 +3,6 @@ package com.amine.torf;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amine.torf.helpers.DataManager;
-import com.amine.torf.helpers.DbHighestScore;
-import com.amine.torf.pojo.Scoredata;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +16,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.amine.torf.helpers.DataManager;
+import com.amine.torf.helpers.DbHighestScore;
+import com.amine.torf.pojo.Scoredata;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 public class Highest_Score extends Activity {
 

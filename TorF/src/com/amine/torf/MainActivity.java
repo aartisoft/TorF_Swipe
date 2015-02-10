@@ -4,6 +4,7 @@ import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,21 +12,29 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amine.torf.helpers.DataBaseHelper;
 import com.amine.torf.helpers.DataManager;
 import com.amine.torf.helpers.PrefsActivity;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
+import com.google.android.gms.plus.Plus;
+import com.google.example.games.basegameutils.BaseGameUtils;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ConnectionCallbacks,
+		OnConnectionFailedListener {
+	String mGreeting = "Hello, anonymous user (not signed in)";
 
 	TextView txtplay, txtfeedback, txthighscore, txtheader;
 	Button btnexit;
@@ -36,19 +45,45 @@ public class MainActivity extends Activity {
 	DataBaseHelper db;
 	Button btnsetting;
 	/* Your ad unit id. Replace with your actual ad unit id. */
-	private static final String AD_UNIT_ID = DataManager.admobid;
 	SharedPreferences myPrefs;
 	SharedPreferences.Editor prefsEditor;
 	private final String TAG_NAME = "tagname";
 	Typeface normal, bold;
 	int ratecounter;
-	private AdView adView;
+
+	private GoogleApiClient mGoogleApiClient;
+	private View signInButton, signOutButton;
+	private boolean mResolvingConnectionFailure = false;
+
+	// Has the user clicked the sign-in button?
+	private boolean mSignInClicked = false;
+
+	// Automatically start the sign-in flow when the Activity starts
+	private boolean mAutoStartSignInFlow = true;
+
+	// request codes we use when invoking an external activity
+	private static final int RC_RESOLVE = 5000;
+	private static final int RC_UNUSED = 5001;
+	private static final int RC_SIGN_IN = 9001;
+
+	// achievements and scores we're pending to push to the cloud
+	// (waiting for the user to sign in, for instance)
+	AccomplishmentsOutbox mOutbox = new AccomplishmentsOutbox();
+	final String TAG = "TorF";
+	boolean mShowSignIn = true;
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		// Create the Google API Client with access to Plus and Games
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this).addApi(Plus.API)
+				.addScope(Plus.SCOPE_PLUS_LOGIN).addApi(Games.API)
+				.addScope(Games.SCOPE_GAMES).build();
 
 		normal = Typeface.createFromAsset(getAssets(), "normal.ttf");
 		bold = Typeface.createFromAsset(getAssets(), "bold.ttf");
@@ -66,19 +101,14 @@ public class MainActivity extends Activity {
 		txtfeedback = (TextView) findViewById(R.id.txtfeedback1);
 		txthighscore = (TextView) findViewById(R.id.txthighscore);
 		txtheader = (TextView) findViewById(R.id.txtheader);
+		signInButton = (View) findViewById(R.id.sign_in_button);
+		signOutButton = (View) findViewById(R.id.sign_out_button);
+
 
 		txtheader.setTypeface(bold);
 		btnsetting = (Button) findViewById(R.id.btnsetting);
 
-		adView = new AdView(this);
-
-		adView.setAdSize(AdSize.BANNER);
-		adView.setAdUnitId(AD_UNIT_ID);
-		AdRequest adRequest = new AdRequest.Builder().build();
-
-		adView.loadAd(adRequest);
-		LinearLayout ll = (LinearLayout) findViewById(R.id.ad);
-		ll.addView(adView);
+		mOutbox.loadLocal(this);
 
 		txtplay.setOnClickListener(new OnClickListener() {
 
@@ -120,8 +150,37 @@ public class MainActivity extends Activity {
 
 				showDialog(DIALOG_LOGIN);
 			}
+
 		});
 
+		signInButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				Toast.makeText(getApplicationContext(), "login g",
+						Toast.LENGTH_LONG).show();
+				mSignInClicked = true;
+				mGoogleApiClient.connect();
+			}
+		});
+
+		signOutButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mSignInClicked = false;
+				Games.signOut(mGoogleApiClient);
+				if (mGoogleApiClient.isConnected()) {
+					mGoogleApiClient.disconnect();
+				}
+
+				setShowSignInButton(true);
+			}
+		});
+	}
+
+	private boolean isSignedIn() {
+		return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
 	}
 
 	@Override
@@ -291,6 +350,182 @@ public class MainActivity extends Activity {
 				}
 			});
 			break;
+		}
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		Log.d(TAG, "onConnectionFailed(): attempting to resolve");
+		if (mResolvingConnectionFailure) {
+			Log.d(TAG, "onConnectionFailed(): already resolving");
+			return;
+		}
+
+		if (mSignInClicked || mAutoStartSignInFlow) {
+			mAutoStartSignInFlow = false;
+			mSignInClicked = false;
+			mResolvingConnectionFailure = true;
+			if (!BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient,
+					connectionResult, RC_SIGN_IN,
+					getString(R.string.signin_other_error))) {
+				mResolvingConnectionFailure = false;
+			}
+		}
+
+		// TODO Auto-generated method stub
+		// Sign-in failed, so show sign-in button on main menu
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(TAG, "onConnected(): connected to Google APIs");
+		// Show sign-out button on main menu
+		setShowSignInButton(false);
+
+		// Show "you are signed in" message on win screen, with no sign in
+		// button.
+
+		// TODO mWinFragment.setShowSignInButton(false);
+
+		// Set the greeting appropriately on main menu
+		Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
+		String displayName;
+		if (p == null) {
+			Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
+			displayName = "???";
+		} else {
+			displayName = p.getDisplayName();
+		}
+
+		// TODO
+
+		// if we have accomplishments to push, push them
+		if (!mOutbox.isEmpty()) {
+			pushAccomplishments();
+			Toast.makeText(this,
+					getString(R.string.your_progress_will_be_uploaded),
+					Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		Log.d(TAG, "onConnectionSuspended(): attempting to connect");
+		mGoogleApiClient.connect();
+	}
+
+	public void setShowSignInButton(boolean showSignIn) {
+		mShowSignIn = showSignIn;
+		updateUi();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		updateUi();
+	}
+
+	public void setGreeting(String greeting) {
+		mGreeting = greeting;
+		updateUi();
+	}
+
+	void updateUi() {
+        if (getApplication() == null) return;
+
+		this.findViewById(R.id.sign_in_bar).setVisibility(
+				mShowSignIn ? View.VISIBLE : View.GONE);
+		this.findViewById(R.id.sign_out_bar).setVisibility(
+				mShowSignIn ? View.GONE : View.VISIBLE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode == RC_SIGN_IN) {
+			mSignInClicked = false;
+			mResolvingConnectionFailure = false;
+			if (resultCode == RESULT_OK) {
+				mGoogleApiClient.connect();
+			} else {
+				BaseGameUtils.showActivityResultError(this, requestCode,
+						resultCode, R.string.signin_other_error);
+			}
+		}
+	}
+
+	void pushAccomplishments() {
+		if (!isSignedIn()) {
+			// can't push to the cloud, so save locally
+			mOutbox.saveLocal(this);
+			return;
+		}
+
+		if (mOutbox.mArrogantAchievement) {
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.amazing));
+			mOutbox.mArrogantAchievement = false;
+		}
+
+		/*
+		 * if (mOutbox.mPrimeAchievement) {
+		 * Games.Achievements.unlock(mGoogleApiClient,
+		 * getString(R.string.amazing)); mOutbox.mPrimeAchievement = false; } if
+		 * (mOutbox.mHumbleAchievement) {
+		 * Games.Achievements.unlock(mGoogleApiClient,
+		 * getString(R.string.achievement_humble)); mOutbox.mHumbleAchievement =
+		 * false; } if (mOutbox.mLeetAchievement) {
+		 * Games.Achievements.unlock(mGoogleApiClient,
+		 * getString(R.string.achievement_leet)); mOutbox.mLeetAchievement =
+		 * false; } if (mOutbox.mBoredSteps > 0) {
+		 * Games.Achievements.increment(mGoogleApiClient,
+		 * getString(R.string.achievement_really_bored), mOutbox.mBoredSteps);
+		 * Games.Achievements.increment(mGoogleApiClient,
+		 * getString(R.string.achievement_bored), mOutbox.mBoredSteps); } if
+		 * (mOutbox.mEasyModeScore >= 0) {
+		 * Games.Leaderboards.submitScore(mGoogleApiClient,
+		 * getString(R.string.leaderboard_easy), mOutbox.mEasyModeScore);
+		 * mOutbox.mEasyModeScore = -1; } if (mOutbox.mHardModeScore >= 0) {
+		 * Games.Leaderboards.submitScore(mGoogleApiClient,
+		 * getString(R.string.leaderboard_hard), mOutbox.mHardModeScore);
+		 * mOutbox.mHardModeScore = -1; }
+		 */
+		mOutbox.saveLocal(this);
+	}
+
+	class AccomplishmentsOutbox {
+		boolean mPrimeAchievement = false;
+		boolean mHumbleAchievement = false;
+		boolean mLeetAchievement = false;
+		boolean mArrogantAchievement = false;
+		int mBoredSteps = 0;
+		int mEasyModeScore = -1;
+		int mHardModeScore = -1;
+
+		boolean isEmpty() {
+			return !mPrimeAchievement && !mHumbleAchievement
+					&& !mLeetAchievement && !mArrogantAchievement
+					&& mBoredSteps == 0 && mEasyModeScore < 0
+					&& mHardModeScore < 0;
+		}
+
+		public void saveLocal(Context ctx) {
+			/*
+			 * TODO: This is left as an exercise. To make it more difficult to
+			 * cheat, this data should be stored in an encrypted file! And
+			 * remember not to expose your encryption key (obfuscate it by
+			 * building it from bits and pieces and/or XORing with another
+			 * string, for instance).
+			 */
+		}
+
+		public void loadLocal(Context ctx) {
+			/*
+			 * TODO: This is left as an exercise. Write code here that loads
+			 * data from the file you wrote in saveLocal().
+			 */
 		}
 	}
 }

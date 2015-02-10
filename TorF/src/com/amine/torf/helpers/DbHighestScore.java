@@ -2,13 +2,13 @@ package com.amine.torf.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amine.torf.pojo.Scoredata;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.amine.torf.pojo.Scoredata;
  
 public class DbHighestScore extends SQLiteOpenHelper {
  
