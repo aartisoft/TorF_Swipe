@@ -108,26 +108,20 @@
             android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="#f0f0f0"
-            android:gravity="center|right"
+            android:gravity="center"
             android:orientation="horizontal"
             android:padding="10dp" >
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:text="you are signed in"
-                android:textColor="#808080"
-                android:textSize="@dimen/text_size_small" />
-
-            <Button
                 android:id="@+id/sign_out_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="sign out"
-                android:textSize="@dimen/text_size_small" />
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:background="@drawable/bordeaux"
+                android:gravity="center"
+                android:text="Sign Out"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size"
+                android:typeface="sans" />
         </LinearLayout>
     </LinearLayout>
 

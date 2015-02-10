@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener {
 	String mGreeting = "Hello, anonymous user (not signed in)";
 
-	TextView txtplay, txtfeedback, txthighscore, txtheader;
+	TextView txtplay, txtfeedback, txthighscore, txtheader, signOutButton;
 	Button btnexit;
 	final private static int DIALOG_LOGIN = 1;
 	Setting_preference setuser;
@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	int ratecounter;
 
 	private GoogleApiClient mGoogleApiClient;
-	private View signInButton, signOutButton;
+	private View signInButton;
 	private boolean mResolvingConnectionFailure = false;
 
 	// Has the user clicked the sign-in button?
@@ -102,8 +102,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		txthighscore = (TextView) findViewById(R.id.txthighscore);
 		txtheader = (TextView) findViewById(R.id.txtheader);
 		signInButton = (View) findViewById(R.id.sign_in_button);
-		signOutButton = (View) findViewById(R.id.sign_out_button);
-
+		signOutButton = (TextView) findViewById(R.id.sign_out_button);
 
 		txtheader.setTypeface(bold);
 		btnsetting = (Button) findViewById(R.id.btnsetting);
@@ -158,8 +157,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			@Override
 			public void onClick(View v) {
 
-				Toast.makeText(getApplicationContext(), "login g",
-						Toast.LENGTH_LONG).show();
 				mSignInClicked = true;
 				mGoogleApiClient.connect();
 			}
@@ -177,6 +174,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				setShowSignInButton(true);
 			}
 		});
+
+		mOutbox.loadLocal(this);
+
 	}
 
 	private boolean isSignedIn() {
@@ -200,24 +200,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 								startActivity(intent);
 							}
 						}).create().show();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
 	}
 
 	public void updaterateCounter() {
@@ -382,21 +364,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// Show sign-out button on main menu
 		setShowSignInButton(false);
 
-		// Show "you are signed in" message on win screen, with no sign in
-		// button.
-
-		// TODO mWinFragment.setShowSignInButton(false);
-
-		// Set the greeting appropriately on main menu
-		Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
-		String displayName;
-		if (p == null) {
-			Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
-			displayName = "???";
-		} else {
-			displayName = p.getDisplayName();
-		}
-
+		/*
+		 * Player p = Games.Players.getCurrentPlayer(mGoogleApiClient); String
+		 * displayName; if (p == null) { Log.w(TAG,
+		 * "mGamesClient.getCurrentPlayer() is NULL!"); displayName = "???"; }
+		 * else { displayName = p.getDisplayName(); }
+		 */
 		// TODO
 
 		// if we have accomplishments to push, push them
@@ -423,7 +396,30 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onStart() {
 		super.onStart();
+		mGoogleApiClient.connect();
 		updateUi();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.d(TAG, "onStop(): disconnecting");
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
+		}
+
 	}
 
 	public void setGreeting(String greeting) {
@@ -432,7 +428,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}
 
 	void updateUi() {
-        if (getApplication() == null) return;
+		if (getApplication() == null)
+			return;
 
 		this.findViewById(R.id.sign_in_bar).setVisibility(
 				mShowSignIn ? View.VISIBLE : View.GONE);
