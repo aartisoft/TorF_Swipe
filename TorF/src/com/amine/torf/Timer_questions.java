@@ -254,22 +254,32 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		if (finalScore == 5) {
 			mOutbox.achievement_newbie = true;
 			achievementToast(getString(R.string.achievement_newbie));
+			pushAccomplishments();
+
 		}
 		if (finalScore == 10) {
 			mOutbox.achievement_rookie = true;
 			achievementToast(getString(R.string.achievement_rookie));
+			pushAccomplishments();
+
 		}
 		if (finalScore == 15) {
 			mOutbox.achievement_beginner = true;
 			achievementToast(getString(R.string.achievement_beginner));
+			pushAccomplishments();
+
 		}
 		if (finalScore == 20) {
 			mOutbox.achievement_talented = true;
 			achievementToast(getString(R.string.achievement_talented));
+			pushAccomplishments();
+
 		}
 		if (finalScore == 25) {
 			mOutbox.achievement_intermediate = true;
 			achievementToast(getString(R.string.achievement_intermediate));
+			pushAccomplishments();
+
 		}
 
 		if (finalScore <= 20) {
@@ -285,9 +295,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		if ((isTrueAnswer == 1 && swipedRight)
 				|| (isTrueAnswer == 0 && !swipedRight)) {
 			rightans++;
+			if (rightans % 5 == 0)
+				checkForAchievements(rightans);
 			linearBoundQ.setBackgroundColor(Color.GREEN);
 			nextquestion(500);
-			checkForAchievements(rightans);
 
 		}
 
@@ -353,18 +364,16 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 						}
 
 						// update leaderboards
-						updateLeaderboards(rightans);
 
 						// push those accomplishments to the cloud, if signed in
-						pushAccomplishments();
 
-						/*Intent iScore = new Intent(Timer_questions.this,
-								Score.class);
-						iScore.putExtra("rightans", rightans);
-						iScore.putExtra("totalques", totalQueLen);
-						iScore.putExtra("category", category);
-						finish();
-						startActivity(iScore);*/
+						/*
+						 * Intent iScore = new Intent(Timer_questions.this,
+						 * Score.class); iScore.putExtra("rightans", rightans);
+						 * iScore.putExtra("totalques", totalQueLen);
+						 * iScore.putExtra("category", category); finish();
+						 * startActivity(iScore);
+						 */
 
 					}
 				} else {
@@ -373,10 +382,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 					}
 
 					// update leaderboards
-					updateLeaderboards(rightans);
 
 					// push those accomplishments to the cloud, if signed in
-					pushAccomplishments();
 
 					/*
 					 * Intent iScore = new Intent(Timer_questions.this,
@@ -391,6 +398,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			}
 
 		}, SPLASHTIME);
+		updateLeaderboards(rightans);
 
 	}
 
@@ -641,12 +649,36 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	void pushAccomplishments() {
 
 		if (mOutbox.achievement_newbie) {
+
 			Games.Achievements.unlock(mGoogleApiClient,
 					getString(R.string.achievement_newbie));
-			mOutbox.achievement_newbie = false;
-			Games.setViewForPopups(mGoogleApiClient,
-					findViewById(R.id.gps_popup));
-			achievementToast("achievement 1 ");
+
+		}
+		if (mOutbox.achievement_rookie) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_rookie));
+
+		}
+
+		if (mOutbox.achievement_beginner) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_beginner));
+
+		}
+
+		if (mOutbox.achievement_talented) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_talented));
+
+		}
+
+		if (mOutbox.achievement_intermediate) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_intermediate));
 
 		}
 
