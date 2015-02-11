@@ -12,5 +12,7 @@
     <dimen name="button_margin">12dp</dimen>
     <dimen name="text_size">40sp</dimen>
     <dimen name="text_size_small">20sp</dimen>
+    <dimen name="button_width_sigin">200dp</dimen>
+    <dimen name="button_height_signin">100dp</dimen>
 
 </resources>

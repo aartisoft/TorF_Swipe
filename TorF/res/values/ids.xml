@@ -15,17 +15,23 @@
    limitations under the License.
 -->
 <resources>
+
     <!-- TODO: Replace this by your app's app ID! -->
     <string name="app_id">586037497238</string>
 
     <!-- TODO: Replace these by your achievement/leaderboard IDs! -->
     <string name="amazing">CgkIlpu6lIcREAIQAQ</string>
-  <!--   <string name="achievement_really_bored">ReplaceMe</string>
-    <string name="achievement_bored">ReplaceMe</string>
-    <string name="achievement_humble">ReplaceMe</string>
-    <string name="achievement_arrogant">ReplaceMe</string>
-    <string name="achievement_leet">ReplaceMe</string>
-
+    <string name="achievement_newbie">CgkIlpu6lIcREAIQAw</string>
+    <string name="achievement_rookie">CgkIlpu6lIcREAIQBA</string>
+    <string name="achievement_beginner">CgkIlpu6lIcREAIQBQ</string>
+    <string name="achievement_talented">CgkIlpu6lIcREAIQBg</string>
+    <string name="achievement_intermediate">CgkIlpu6lIcREAIQBw</string>
+    <string name="event_true_answers">CgkIlpu6lIcREAIQAQ</string>
+    <string name="leaderboard_leader_board_beginners">CgkIlpu6lIcREAIQCA</string>
+    <string name="leaderboard_leader_board_advanced">CgkIlpu6lIcREAIQCQ</string>
+    <!--
     <string name="leaderboard_easy">ReplaceMe</string>
-    <string name="leaderboard_hard">ReplaceMe</string> -->
+    <string name="leaderboard_hard">ReplaceMe</string>
+    -->
+
 </resources>

@@ -72,7 +72,19 @@
             android:layout_margin="@dimen/button_margin"
             android:background="@drawable/cyan_button"
             android:gravity="center"
-            android:text="High scores"
+            android:text="Leaderboard"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size"
+            android:typeface="sans" />
+
+        <TextView
+            android:id="@+id/txtAchievements"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="@dimen/button_margin"
+            android:background="@drawable/gold"
+            android:gravity="center"
+            android:text="Achievements"
             android:textColor="@android:color/white"
             android:textSize="@dimen/text_size"
             android:typeface="sans" />
@@ -80,12 +92,11 @@
         <LinearLayout
             android:id="@+id/sign_in_bar"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="@dimen/button_height_signin"
             android:layout_marginTop="10dp"
-            android:background="#f0f0f0"
+            android:background="@android:color/transparent"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp" >
+            android:orientation="horizontal" >
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/sign_in_button"
@@ -104,10 +115,10 @@
 
         <LinearLayout
             android:id="@+id/sign_out_bar"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="10dp"
-            android:background="#f0f0f0"
+            android:background="@android:color/transparent"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="10dp" >
@@ -116,10 +127,10 @@
                 android:id="@+id/sign_out_button"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="@dimen/button_height"
-                android:background="@drawable/bordeaux"
+                android:background="@drawable/gray"
                 android:gravity="center"
                 android:text="Sign Out"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="@dimen/text_size"
                 android:typeface="sans" />
         </LinearLayout>

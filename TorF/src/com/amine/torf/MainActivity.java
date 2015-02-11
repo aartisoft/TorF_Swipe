@@ -28,7 +28,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
 
@@ -450,6 +449,32 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				BaseGameUtils.showActivityResultError(this, requestCode,
 						resultCode, R.string.signin_other_error);
 			}
+		}
+	}
+	
+	
+	//******************************Achievements***********************//
+	
+	public void onShowAchievementsRequested() {
+		if (isSignedIn()) {
+			startActivityForResult(
+					Games.Achievements.getAchievementsIntent(mGoogleApiClient),
+					RC_UNUSED);
+		} else {
+			BaseGameUtils.makeSimpleDialog(this,
+					getString(R.string.achievements_not_available)).show();
+		}
+	}
+
+	public void onShowLeaderboardsRequested() {
+		if (isSignedIn()) {
+			startActivityForResult(
+					Games.Leaderboards
+							.getAllLeaderboardsIntent(mGoogleApiClient),
+					RC_UNUSED);
+		} else {
+			BaseGameUtils.makeSimpleDialog(this,
+					getString(R.string.leaderboards_not_available)).show();
 		}
 	}
 
