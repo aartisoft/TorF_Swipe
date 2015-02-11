@@ -29,9 +29,5 @@
     <string name="event_true_answers">CgkIlpu6lIcREAIQAQ</string>
     <string name="leaderboard_leader_board_beginners">CgkIlpu6lIcREAIQCA</string>
     <string name="leaderboard_leader_board_advanced">CgkIlpu6lIcREAIQCQ</string>
-    <!--
-    <string name="leaderboard_easy">ReplaceMe</string>
-    <string name="leaderboard_hard">ReplaceMe</string>
-    -->
 
 </resources>

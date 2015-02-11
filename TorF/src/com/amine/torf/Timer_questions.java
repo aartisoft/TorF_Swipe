@@ -36,11 +36,17 @@ import com.andtinder.view.SimpleCardStackAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.internal.mz;
 import com.google.android.gms.plus.Plus;
+import com.google.example.games.basegameutils.BaseGameUtils;
 
-public class Timer_questions extends Activity {
+public class Timer_questions extends Activity implements ConnectionCallbacks,
+		OnConnectionFailedListener {
 	String que, category, comment = "";
 	int isTrue, difficulty;
 	int rightans = 0;
@@ -84,17 +90,20 @@ public class Timer_questions extends Activity {
 	private GoogleApiClient mGoogleApiClient;
 
 	public long timerCount = 15000;
+	private String TAG = "TRF QUESTIONS";
 
 	@SuppressLint("DefaultLocale")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.quizscreen);
-
-		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Plus.API)
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this).addApi(Plus.API)
 				.addScope(Plus.SCOPE_PLUS_LOGIN).addApi(Games.API)
 				.addScope(Games.SCOPE_GAMES).build();
-		mGoogleApiClient.connect();
+
+		// mGoogleApiClient.connect();
 		adapterQuestion = new SimpleCardStackAdapter(this);
 		adapterComment = new SimpleCardStackAdapter(this);
 
@@ -348,13 +357,15 @@ public class Timer_questions extends Activity {
 
 						// push those accomplishments to the cloud, if signed in
 						pushAccomplishments();
-						/*
-						 * Intent iScore = new Intent(Timer_questions.this,
-						 * Score.class); iScore.putExtra("rightans", rightans);
-						 * iScore.putExtra("totalques", totalQueLen);
-						 * iScore.putExtra("category", category); finish();
-						 * startActivity(iScore);
-						 */
+
+						/*Intent iScore = new Intent(Timer_questions.this,
+								Score.class);
+						iScore.putExtra("rightans", rightans);
+						iScore.putExtra("totalques", totalQueLen);
+						iScore.putExtra("category", category);
+						finish();
+						startActivity(iScore);*/
+
 					}
 				} else {
 					if (cbtimer) {
@@ -366,6 +377,7 @@ public class Timer_questions extends Activity {
 
 					// push those accomplishments to the cloud, if signed in
 					pushAccomplishments();
+
 					/*
 					 * Intent iScore = new Intent(Timer_questions.this,
 					 * Score.class); iScore.putExtra("rightans", rightans);
@@ -373,6 +385,7 @@ public class Timer_questions extends Activity {
 					 * iScore.putExtra("category", category); finish();
 					 * startActivity(iScore);
 					 */
+
 				}
 
 			}
@@ -588,6 +601,12 @@ public class Timer_questions extends Activity {
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+		mGoogleApiClient.connect();
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 
@@ -609,8 +628,13 @@ public class Timer_questions extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
+
 		if (cbtimer) {
 			timer.cancel();
+		}
+		Log.d(TAG, "onStop(): disconnecting");
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
 		}
 	}
 
@@ -620,6 +644,10 @@ public class Timer_questions extends Activity {
 			Games.Achievements.unlock(mGoogleApiClient,
 					getString(R.string.achievement_newbie));
 			mOutbox.achievement_newbie = false;
+			Games.setViewForPopups(mGoogleApiClient,
+					findViewById(R.id.gps_popup));
+			achievementToast("achievement 1 ");
+
 		}
 
 		/*
@@ -704,6 +732,43 @@ public class Timer_questions extends Activity {
 			 * data from the file you wrote in saveLocal().
 			 */
 		}
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		Log.d(TAG, "onConnectionFailed(): attempting to resolve");
+
+		// TODO Auto-generated method stub
+		// Sign-in failed, so show sign-in button on main menu
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(TAG, "onConnected(): connected to Google APIs");
+		// Show sign-out button on main menu
+
+		/*
+		 * Player p = Games.Players.getCurrentPlayer(mGoogleApiClient); String
+		 * displayName; if (p == null) { Log.w(TAG,
+		 * "mGamesClient.getCurrentPlayer() is NULL!"); displayName = "???"; }
+		 * else { displayName = p.getDisplayName(); }
+		 */
+		// TODO
+
+		// if we have accomplishments to push, push them
+		if (!mOutbox.isEmpty()) {
+			pushAccomplishments();
+			Toast.makeText(this,
+					getString(R.string.your_progress_will_be_uploaded),
+					Toast.LENGTH_LONG).show();
+		}
+
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		Log.d(TAG, "onConnectionSuspended(): attempting to connect");
+		mGoogleApiClient.connect();
 	}
 
 }

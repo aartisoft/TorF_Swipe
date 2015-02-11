@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	int ratecounter;
 
 	private GoogleApiClient mGoogleApiClient;
-	private View signInButton, signOutButton;
+	private View signInButton, signOutButton, achievementsBtn, leaderboardBtn;
 	private boolean mResolvingConnectionFailure = false;
 
 	// Has the user clicked the sign-in button?
@@ -102,6 +102,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		txtheader = (TextView) findViewById(R.id.txtheader);
 		signInButton = (View) findViewById(R.id.sign_in_button);
 		signOutButton = (View) findViewById(R.id.sign_out_button);
+		achievementsBtn = (View) findViewById(R.id.txtAchievements);
+		leaderboardBtn = (View) findViewById(R.id.txthighscore);
 
 		txtheader.setTypeface(bold);
 		btnsetting = (Button) findViewById(R.id.btnsetting);
@@ -175,6 +177,22 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		});
 
 		mOutbox.loadLocal(this);
+
+		achievementsBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onShowAchievementsRequested();
+
+			}
+		});
+
+		leaderboardBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onShowLeaderboardsRequested();
+
+			}
+		});
 
 	}
 
@@ -451,10 +469,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			}
 		}
 	}
-	
-	
-	//******************************Achievements***********************//
-	
+
+	// ******************************Achievements***********************//
+
 	public void onShowAchievementsRequested() {
 		if (isSignedIn()) {
 			startActivityForResult(
@@ -488,6 +505,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		if (mOutbox.mArrogantAchievement) {
 			Games.Achievements.unlock(mGoogleApiClient,
 					getString(R.string.amazing));
+
 			mOutbox.mArrogantAchievement = false;
 		}
 
@@ -549,5 +567,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			 * data from the file you wrote in saveLocal().
 			 */
 		}
+	}
+
+	public GoogleApiClient getmGoogleApiClient() {
+		return mGoogleApiClient;
+	}
+
+	public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
+		this.mGoogleApiClient = mGoogleApiClient;
 	}
 }
