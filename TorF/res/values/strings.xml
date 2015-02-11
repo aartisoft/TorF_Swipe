@@ -18,5 +18,6 @@
     <string name="signin_other_error">There was an issue with sign in.  Please try again later.</string>
     <string name="achievements_not_available">Please sign in to view achievements.</string>
     <string name="leaderboards_not_available">Please sign in to view leaderboards.</string>
+    <string name="achievement">Achievement</string>
 
 </resources>
