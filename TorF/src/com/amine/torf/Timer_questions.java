@@ -48,10 +48,8 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 public class Timer_questions extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener {
 	String que, category, comment = "";
-	int isTrue, difficulty;
-	int rightans = 0;
-	int wrongans = 0;
-	int i = 0;
+	int isTrue, difficulty, rightans = 0, wrongans = 0, questionNumber = 0,
+			combo = 0;
 	String right, wrong, next;
 	DataBaseHelper db;
 	TextView txtcategoryname, tv, tanoofque, lifeline;
@@ -247,41 +245,81 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	}
 
-	void checkForAchievements(int finalScore) {
+	void checkForAchievements(int finalScore, int combo) {
 		// Check if each condition is met; if so, unlock the corresponding
 
 		// achievement.
-		if (finalScore == 5) {
+
+		if (combo == 3) {
+			mOutbox.achievement_combo_first = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+
+		}
+		if (combo == 5) {
+			mOutbox.achievement_combo_second = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+		}
+		if (combo == 10) {
+			mOutbox.achievement_combo_third = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+		}
+		if (combo == 20) {
+			mOutbox.achievement_combo_fourth = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+		}
+		if (combo == 25) {
+			mOutbox.achievement_combo_fifth = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+		}
+		if (combo == 30) {
+			mOutbox.achievement_combo_last = true;
+			if (mistake < 3) {
+				mistake++;
+			}
+		}
+
+		lifeline.setText("Life : " + mistake);
+
+		if (finalScore == 3) {
 			mOutbox.achievement_newbie = true;
-			achievementToast(getString(R.string.achievement_newbie));
-			pushAccomplishments();
+
+		}
+		if (finalScore == 5) {
+			mOutbox.achievement_rookie = true;
 
 		}
 		if (finalScore == 10) {
-			mOutbox.achievement_rookie = true;
-			achievementToast(getString(R.string.achievement_rookie));
-			pushAccomplishments();
+			mOutbox.achievement_beginner = true;
 
 		}
 		if (finalScore == 15) {
-			mOutbox.achievement_beginner = true;
-			achievementToast(getString(R.string.achievement_beginner));
-			pushAccomplishments();
+			mOutbox.achievement_talented = true;
 
 		}
 		if (finalScore == 20) {
-			mOutbox.achievement_talented = true;
-			achievementToast(getString(R.string.achievement_talented));
-			pushAccomplishments();
-
-		}
-		if (finalScore == 25) {
 			mOutbox.achievement_intermediate = true;
-			achievementToast(getString(R.string.achievement_intermediate));
-			pushAccomplishments();
 
 		}
 
+		if (finalScore == 25) {
+			mOutbox.achievement_experienced = true;
+
+		}
+		if (finalScore == 30) {
+			mOutbox.achievement_advanced = true;
+
+		}
+		pushAccomplishments();
 		if (finalScore <= 20) {
 			mOutbox.mEasyModeScore = finalScore;
 		} else {
@@ -295,8 +333,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		if ((isTrueAnswer == 1 && swipedRight)
 				|| (isTrueAnswer == 0 && !swipedRight)) {
 			rightans++;
-			if (rightans % 5 == 0)
-				checkForAchievements(rightans);
+			combo++;
+			checkForAchievements(rightans, combo);
 			linearBoundQ.setBackgroundColor(Color.GREEN);
 			nextquestion(500);
 
@@ -316,6 +354,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			wrongans++;
 			vibrate();
 			mistake--;
+			combo--;
 			lifeline.setText("Life : " + mistake);
 
 		}
@@ -472,9 +511,9 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	public void setCurrentQuestion(String question, final int isTrueQuestion,
 			final String comment) {
 
-		i++;
-		String noofque = "Question No. " + i + " out of " + totalQueLen + " "
-				+ isTrueQuestion;
+		questionNumber++;
+		String noofque = "Question No. " + questionNumber + " out of "
+				+ totalQueLen + " " + isTrueQuestion;
 		tanoofque.setTextColor(Color.BLACK);
 		tanoofque.setText(noofque);
 		tanoofque.clearAnimation();
@@ -682,6 +721,56 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		}
 
+		if (mOutbox.achievement_experienced) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_experienced));
+
+		}
+
+		if (mOutbox.achievement_advanced) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_advanced));
+
+		}
+
+		if (mOutbox.achievement_combo_first) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_first_combo));
+
+		}
+		if (mOutbox.achievement_combo_second) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_second_combo));
+
+		}
+		if (mOutbox.achievement_combo_third) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_third_combo));
+
+		}
+		if (mOutbox.achievement_combo_fourth) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_fourth_combo));
+
+		}
+		if (mOutbox.achievement_combo_fifth) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_fifth_combo));
+
+		}
+		if (mOutbox.achievement_combo_last) {
+
+			Games.Achievements.unlock(mGoogleApiClient,
+					getString(R.string.achievement_last_combo));
+
+		}
 		/*
 		 * if (mOutbox.mPrimeAchievement) {
 		 * Games.Achievements.unlock(mGoogleApiClient,
@@ -737,6 +826,16 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		boolean achievement_beginner = false;
 		boolean achievement_talented = false;
 		boolean achievement_intermediate = false;
+		boolean achievement_experienced = false;
+		boolean achievement_advanced = false;
+
+		boolean achievement_combo_first = false;
+		boolean achievement_combo_second = false;
+		boolean achievement_combo_third = false;
+		boolean achievement_combo_fourth = false;
+		boolean achievement_combo_fifth = false;
+		boolean achievement_combo_last = false;
+
 		int score = 0;
 		int mEasyModeScore = -1;
 		int mHardModeScore = -1;
@@ -745,7 +844,11 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			return !achievement_newbie && !achievement_rookie
 					&& !achievement_beginner && !achievement_talented
 					&& !achievement_intermediate && score == 0
-					&& mEasyModeScore < 0 && mHardModeScore < 0;
+					&& !achievement_experienced && !achievement_advanced
+					&& mEasyModeScore < 0 && mHardModeScore < 0
+					&& !achievement_combo_first && !achievement_combo_second
+					&& !achievement_combo_third && !achievement_combo_fourth
+					&& !achievement_combo_fifth && !achievement_combo_last;
 		}
 
 		public void saveLocal(Context ctx) {

@@ -1,5 +1,11 @@
 package com.amine.torf;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,12 +16,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +31,7 @@ import android.widget.Toast;
 import com.amine.torf.helpers.DataBaseHelper;
 import com.amine.torf.helpers.DataManager;
 import com.amine.torf.helpers.PrefsActivity;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -173,6 +182,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				}
 
 				setShowSignInButton(true);
+
 			}
 		});
 
@@ -186,6 +196,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			}
 		});
 
+		txtheader.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				resetAchievements();
+
+			}
+		});
 		leaderboardBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -575,5 +592,75 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 	public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
 		this.mGoogleApiClient = mGoogleApiClient;
+	}
+
+	public void resetAchievements() {
+		if (isSignedIn()) {
+			String accountName = Games.getCurrentAccountName(mGoogleApiClient);
+			String scopes = Games.SCOPE_GAMES.toString();
+
+			new ResetterTask(this.getApplicationContext(), accountName, scopes)
+					.execute((Void) null);
+		}
+	}
+
+	private class ResetterTask extends AsyncTask<Void, Void, Void> {
+		public String mAccountName;
+		public String mScope;
+		public Context mContext;
+
+		public ResetterTask(Context con, String name, String sc) {
+			mContext = con;
+			mAccountName = name;
+			mScope = sc;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				String accesstoken = GoogleAuthUtil.getToken(mContext,
+						mAccountName, mScope);
+
+				HttpClient client = new DefaultHttpClient();
+				// Reset leader board:
+				/*
+				 * String leaderboardid = "theleaderboardid"; HttpPost post =
+				 * new HttpPost ( "https://www.googleapis.com"+
+				 * "/games/v1management"+ "/leaderboards/"+ leaderboardid+
+				 * "/scores/reset?access_token="+accesstoken );
+				 */
+
+				// Reset a single achievement like this:
+				/*
+				 * String acheivementid = "acheivementid"; HttpPost post = new
+				 * HttpPost ( "https://www.googleapis.com"+
+				 * "/games/v1management"+ "/achievements/"+ acheivementid+
+				 * "/reset?access_token="+accesstoken );
+				 */
+
+				// This resets all achievements:
+				HttpPost post = new HttpPost("https://www.googleapis.com"
+						+ "/games/v1management" + "/achievements"
+						+ "/reset?access_token=" + accesstoken);
+
+				HttpResponse response = client.execute(post);
+				Log.i(TAG, EntityUtils.toString(response.getEntity()));
+
+				Log.w(TAG, "Reset achievements done.");
+			} catch (Exception e) {
+				Log.e(TAG, "Failed to reset: " + e.getMessage(), e);
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// Launch activity to refresh data on client.
+			// NOTE: Incremental achievements will look like they are not reset.
+			// However, next time you and some steps it will start from 0 and
+			// gui will look ok.
+			onShowAchievementsRequested();
+		}
 	}
 }
