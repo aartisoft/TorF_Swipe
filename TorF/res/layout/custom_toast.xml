@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toast_layout_root"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#22E0C7"
+    android:id="@+id/custom_toast_layout_id"
+    android:layout_width="@dimen/button_width"
+    android:layout_height="@dimen/button_height"
+    android:background="@android:color/transparent"
     android:orientation="horizontal"
-    android:padding="10dp" >
+    android:padding="5dp" >
 
-<!--     <ImageView -->
-<!--         android:id="@+id/image" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="fill_parent" -->
-<!--         android:layout_marginRight="10dp" /> -->
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/splash_icon_7" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:textColor="#FFF" />
+        android:layout_height="wrap_content"
+        android:textColor="#000" />
 
 </LinearLayout>

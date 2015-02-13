@@ -19,10 +19,14 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,9 +45,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.internal.mz;
 import com.google.android.gms.plus.Plus;
-import com.google.example.games.basegameutils.BaseGameUtils;
 
 public class Timer_questions extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener {
@@ -83,7 +85,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	CardModel cardModelQuestion, cardModelComment;
 	SimpleCardStackAdapter adapterQuestion, adapterComment;
 	LinearLayout linearBoundQ, linearBoundC, linearButtons;
-
+	Toast toast;
 	AccomplishmentsOutbox mOutbox = new AccomplishmentsOutbox();
 	private GoogleApiClient mGoogleApiClient;
 
@@ -170,12 +172,31 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		tv.setTypeface(bold);
 		totalQueLen = 20;
 
+		LayoutInflater inflater = getLayoutInflater();
+
+		View layout = inflater.inflate(R.layout.custom_toast,
+				(ViewGroup) findViewById(R.id.custom_toast_layout_id));
+
+		// set a dummy image
+		
+		TextView text = (TextView) layout.findViewById(R.id.text);
+		text.setText("Combo: 3 answers streak !");
+
+		// Toast...
+		toast = new Toast(getApplicationContext());
+		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		toast.setDuration(Toast.LENGTH_LONG);
+		toast.setView(layout);
+
+		// set a message
+
 		getquestions = db.getquestion(categoryname);
 
 		Log.w("questions ", "" + getquestions.get(0).get_isTrue());
 		getquestionsanswers(currentQuestion);
 
 		txtcategoryname.setText(categoryname.toUpperCase());
+
 		btntimer.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -250,46 +271,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		// achievement.
 
-		if (combo == 3) {
-			mOutbox.achievement_combo_first = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-
-		}
-		if (combo == 5) {
-			mOutbox.achievement_combo_second = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-		}
-		if (combo == 10) {
-			mOutbox.achievement_combo_third = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-		}
-		if (combo == 20) {
-			mOutbox.achievement_combo_fourth = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-		}
-		if (combo == 25) {
-			mOutbox.achievement_combo_fifth = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-		}
-		if (combo == 30) {
-			mOutbox.achievement_combo_last = true;
-			if (mistake < 3) {
-				mistake++;
-			}
-		}
-
-		lifeline.setText("Life : " + mistake);
-
 		if (finalScore == 3) {
 			mOutbox.achievement_newbie = true;
 
@@ -334,6 +315,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				|| (isTrueAnswer == 0 && !swipedRight)) {
 			rightans++;
 			combo++;
+			pushIncrementalAchievements(combo);
 			checkForAchievements(rightans, combo);
 			linearBoundQ.setBackgroundColor(Color.GREEN);
 			nextquestion(500);
@@ -371,6 +353,15 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				}
 			}
 		}).start();
+	}
+
+	private void pushIncrementalAchievements(int combo2) {
+
+		if (combo2 <= 30 && combo2 % 3 == 0) {
+			toast.show();
+			Games.Achievements.increment(mGoogleApiClient,
+					getString(R.string.achievement_first_combo), (combo2 * 2));
+		}
 	}
 
 	public void nextquestion(int SPLASHTIME) {
