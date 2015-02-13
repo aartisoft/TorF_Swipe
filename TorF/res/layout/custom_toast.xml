@@ -9,10 +9,10 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
-        android:background="@drawable/splash_icon_7" />
+        android:background="@drawable/logo_small" />
 
     <TextView
         android:id="@+id/text"
