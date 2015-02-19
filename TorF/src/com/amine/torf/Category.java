@@ -144,7 +144,7 @@ public class Category extends Activity {
 
 		});
 		Intent intent = getIntent();
-		boolean isSigned = intent.getExtras().getBoolean("isSigned");
+		boolean isSigned = intent.getExtras().getBoolean("signedIn");
 		if (isSigned == false)
 			Toast.makeText(getApplicationContext(),
 					"Please sign in first, to upload your scores", Toast.LENGTH_LONG)
