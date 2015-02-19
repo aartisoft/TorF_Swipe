@@ -12,12 +12,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
-        android:background="@drawable/logo_small" />
+        android:adjustViewBounds="true"
+        android:alpha=".5"
+        android:background="@drawable/logo_small"
+        android:maxHeight="80dp"
+        android:maxWidth="80dp"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
+        android:scaleType="fitXY" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000" />
+        android:layout_gravity="center"
+        android:text="Combo : 3 answers streak !!!"
+        android:textSize="@dimen/text_size_medium"/>
 
 </LinearLayout>

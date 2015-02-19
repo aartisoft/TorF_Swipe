@@ -179,13 +179,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		// set a dummy image
 		
-		TextView text = (TextView) layout.findViewById(R.id.text);
-		text.setText("Combo: 3 answers streak !");
-
 		// Toast...
 		toast = new Toast(getApplicationContext());
-		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-		toast.setDuration(Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.TOP, 0, 90);
+		toast.setDuration(Toast.LENGTH_SHORT);
 		toast.setView(layout);
 
 		// set a message
