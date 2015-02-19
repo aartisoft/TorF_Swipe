@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amine.torf.helpers.DataBaseHelper;
 import com.amine.torf.helpers.DataManager;
@@ -142,7 +143,12 @@ public class Category extends Activity {
 			}
 
 		});
-
+		Intent intent = getIntent();
+		boolean isSigned = intent.getExtras().getBoolean("isSigned");
+		if (isSigned == false)
+			Toast.makeText(getApplicationContext(),
+					"Please sign in first, to upload your scores", Toast.LENGTH_LONG)
+					.show();
 	}
 
 	@Override

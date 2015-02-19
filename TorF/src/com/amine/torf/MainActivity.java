@@ -245,6 +245,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		} else {
 			Intent i = new Intent(MainActivity.this, Category.class);
+			if (isSignedIn())
+				i.putExtra("signedIn", true);
+			else
+				i.putExtra("signedIn", false);
+
 			startActivity(i);
 		}
 
@@ -265,7 +270,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 								.parse(url)));
 						prefsEditor.putInt(TAG_NAME, 200);
 						prefsEditor.commit();
+						
 						Intent i = new Intent(MainActivity.this, Category.class);
+						if (isSignedIn())
+							i.putExtra("signedIn", true);
+						else
+							i.putExtra("signedIn", false);
+
 						startActivity(i);
 
 					}
@@ -277,6 +288,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				prefsEditor.putInt(TAG_NAME, 0);
 				prefsEditor.commit();
 				Intent i = new Intent(MainActivity.this, Category.class);
+				if (isSignedIn())
+					i.putExtra("signedIn", true);
+				else
+					i.putExtra("signedIn", false);
+
 				startActivity(i);
 
 			}
@@ -288,6 +304,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				prefsEditor.putInt(TAG_NAME, 200);
 				prefsEditor.commit();
 				Intent i = new Intent(MainActivity.this, Category.class);
+				if (isSignedIn())
+					i.putExtra("signedIn", true);
+				else
+					i.putExtra("signedIn", false);
+
 				startActivity(i);
 
 			}

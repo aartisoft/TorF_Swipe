@@ -178,7 +178,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				(ViewGroup) findViewById(R.id.custom_toast_layout_id));
 
 		// set a dummy image
-		
+
 		// Toast...
 		toast = new Toast(getApplicationContext());
 		toast.setGravity(Gravity.TOP, 0, 90);
@@ -248,6 +248,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		LinearLayout ll = (LinearLayout) findViewById(R.id.ad);
 		ll.addView(adView);
 
+		
 	}
 
 	// ************************Achievements*****************************************//
@@ -297,7 +298,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			mOutbox.achievement_advanced = true;
 
 		}
-		pushAccomplishments();
+		if (isSignedIn())
+			pushAccomplishments();
 		if (finalScore <= 20) {
 			mOutbox.mEasyModeScore = finalScore;
 		} else {
@@ -312,8 +314,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				|| (isTrueAnswer == 0 && !swipedRight)) {
 			rightans++;
 			combo++;
-			pushIncrementalAchievements(combo);
-			checkForAchievements(rightans, combo);
+			if (isSignedIn()) {
+				pushIncrementalAchievements(combo);
+				checkForAchievements(rightans, combo);
+			}
 			linearBoundQ.setBackgroundColor(Color.GREEN);
 			nextquestion(500);
 
@@ -880,10 +884,12 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		// if we have accomplishments to push, push them
 		if (!mOutbox.isEmpty()) {
-			pushAccomplishments();
-			Toast.makeText(this,
-					getString(R.string.your_progress_will_be_uploaded),
-					Toast.LENGTH_LONG).show();
+			if (isSignedIn()) {
+				pushAccomplishments();
+				Toast.makeText(this,
+						getString(R.string.your_progress_will_be_uploaded),
+						Toast.LENGTH_LONG).show();
+			}
 		}
 
 	}
@@ -894,4 +900,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		mGoogleApiClient.connect();
 	}
 
+	private boolean isSignedIn() {
+		return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+	}
 }
