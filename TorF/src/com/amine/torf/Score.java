@@ -64,16 +64,18 @@ public class Score extends Activity {
 		bold = Typeface.createFromAsset(getAssets(), "bold.ttf");
 		LinearLayout ll = (LinearLayout) findViewById(R.id.ad);
 		ll.addView(adView);
-		AdRequest adRequest = new AdRequest.Builder().build();
+		AdRequest adRequest = new AdRequest.Builder().addTestDevice(
+				DataManager.deviceId).build();
 
 		adView.loadAd(adRequest);
 
 		// Create the interstitial.
 		interstitial = new InterstitialAd(this);
-		interstitial.setAdUnitId("ca-app-pub-6192865524332826/7070374392");
+		interstitial.setAdUnitId(DataManager.interstitialid);
 
 		// Create ad request.
-		AdRequest adRequest1 = new AdRequest.Builder().build();
+		AdRequest adRequest1 =  new AdRequest.Builder().addTestDevice(
+				DataManager.deviceId).build();
 
 		// Begin loading your interstitial.
 		interstitial.loadAd(adRequest1);
@@ -109,8 +111,7 @@ public class Score extends Activity {
 		btnMainMenu = (Button) findViewById(R.id.btnMainMenu);
 		btnHighscore = (Button) findViewById(R.id.btnHighestscore);
 		btnShare = (Button) findViewById(R.id.btnShare);
-		
-		
+
 		txtright.setText("" + result);
 
 		btnMainMenu.setOnClickListener(new OnClickListener() {
@@ -132,18 +133,21 @@ public class Score extends Activity {
 				startActivity(iMainMenu1);
 			}
 		});
-		
-		  btnShare.setOnClickListener(new OnClickListener() {
-	        	@Override
-	    		public void onClick(View arg0) {
-	        		  Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-	        	        sharingIntent.setType("text/plain");
-	        	        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, DataManager.share );
-	        	      // sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, share);
-	        	        startActivity(Intent.createChooser(sharingIntent, "Share using"));
-	        		
-	        	}
-	    		});
+
+		btnShare.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+						DataManager.share);
+				// sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+				// share);
+				startActivity(Intent
+						.createChooser(sharingIntent, "Share using"));
+
+			}
+		});
 
 		showDialog(DIALOG_LOGIN);
 
@@ -190,15 +194,15 @@ public class Score extends Activity {
 		switch (id) {
 		case DIALOG_LOGIN:
 			LayoutInflater inflater = LayoutInflater.from(this);
-			
+
 			View dialogview = inflater.inflate(
 					R.layout.custom_dialog_entername, null);
-	
+
 			AlertDialog.Builder dialogbuilder = new AlertDialog.Builder(this);
 			dialogbuilder.setView(dialogview);
-			
+
 			dialogDetails = dialogbuilder.create();
-			
+
 			break;
 		}
 
@@ -212,8 +216,9 @@ public class Score extends Activity {
 		switch (id) {
 		case DIALOG_LOGIN:
 			final AlertDialog myDialog = (AlertDialog) dialog;
-			myDialog.getWindow().setLayout(LayoutParams.MATCH_PARENT , LayoutParams.WRAP_CONTENT);
-		
+			myDialog.getWindow().setLayout(LayoutParams.MATCH_PARENT,
+					LayoutParams.WRAP_CONTENT);
+
 			Button login = (Button) myDialog.findViewById(R.id.btnOk);
 			Button createAccount = (Button) myDialog
 					.findViewById(R.id.btncancel);
@@ -222,7 +227,7 @@ public class Score extends Activity {
 			input.setTypeface(bold);
 			input.setText(user.get(Setting_preference.KEY_USERNAME));
 			TextView text = (TextView) myDialog.findViewById(R.id.txtname);
-			
+
 			text.setTypeface(bold);
 
 			login.setOnClickListener(new OnClickListener() {

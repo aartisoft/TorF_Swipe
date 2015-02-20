@@ -4,7 +4,7 @@
     <string name="app_name">TorF</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="admobid">a15377b5f8e45f8</string>
+<!--     <string name="admobid">a15377b5f8e45f8</string> -->
     <string name="feedbackalert">Are you Happy With our Application?</string>
     <string name="feedbackyes">Yes? Rate My App</string>
     <string name="feedbackno">No? Send Suggetions</string>

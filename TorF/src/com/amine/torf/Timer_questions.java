@@ -242,13 +242,14 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		adView.setAdSize(AdSize.BANNER);
 		adView.setAdUnitId(AD_UNIT_ID);
-		AdRequest adRequest = new AdRequest.Builder().build();
+		// AdRequest adRequest = new AdRequest.Builder().build();
 
+		AdRequest adRequest = new AdRequest.Builder().addTestDevice(
+				DataManager.deviceId).build();
 		adView.loadAd(adRequest);
 		LinearLayout ll = (LinearLayout) findViewById(R.id.ad);
 		ll.addView(adView);
 
-		
 	}
 
 	// ************************Achievements*****************************************//
