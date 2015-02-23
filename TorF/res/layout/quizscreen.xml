@@ -53,12 +53,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center|left|top"
+                android:gravity="center|left"
                 android:text="Timer : "
                 android:textColor="@color/Black"
                 android:textSize="15dp" />
 
-            <TextView
+            <!--
+                 <TextView
                 android:id="@+id/txtlife"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -67,6 +68,51 @@
                 android:text="Life : "
                 android:textColor="@color/Black"
                 android:textSize="15dp" />
+            -->
+
+            <ImageView
+                android:id="@+id/heart1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:adjustViewBounds="true"
+                android:alpha=".75"
+                android:background="@drawable/heart"
+                android:gravity="center|end|top"
+                android:maxHeight="80dp"
+                android:maxWidth="80dp"
+                android:minHeight="30dp"
+                android:minWidth="30dp"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/heart2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:adjustViewBounds="true"
+                android:alpha=".75"
+                android:background="@drawable/heart"
+                android:gravity="center|end|top"
+                android:maxHeight="80dp"
+                android:maxWidth="80dp"
+                android:minHeight="30dp"
+                android:minWidth="30dp"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:id="@+id/heart3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:alpha=".75"
+                android:background="@drawable/heart"
+                android:gravity="center|end|top"
+                android:maxHeight="80dp"
+                android:maxWidth="80dp"
+                android:minHeight="30dp"
+                android:minWidth="30dp"
+                android:scaleType="fitXY" />
         </LinearLayout>
 
         <!--

@@ -54,7 +54,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			combo = 0;
 	String right, wrong, next;
 	DataBaseHelper db;
-	TextView txtcategoryname, tv, tanoofque, lifeline;
+	TextView txtcategoryname, tv, tanoofque;
+	ImageView heart1, heart2, heart3;
 	static int currentQuestion = 0;
 	MediaPlayer mp;
 	List<QuizPojo> getquestions = null;
@@ -67,7 +68,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	boolean cbvibrate, cbtimer;
 	Vibrator vibe;
 	String categoryname;
-	int mistake = DataManager.mistake;
+	int lives = DataManager.lives;
 	int numofquestions = DataManager.noofquestions;
 	private AdView adView;
 	Button btnpass, btntimer;
@@ -154,7 +155,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		rightans = 0;
 		wrongans = 0;
 
-		lifeline = (TextView) this.findViewById(R.id.txtlife);
 		btnpass = (Button) this.findViewById(R.id.btnskip);
 		txtcategoryname = (TextView) this.findViewById(R.id.txtcategoryname);
 		tanoofque = (TextView) this.findViewById(R.id.tanoofque1);
@@ -165,7 +165,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		next = "Next Question";
 
 		tanoofque.setTypeface(normal);
-		lifeline.setTypeface(bold);
 		btntimer.setTypeface(bold);
 		btnpass.setTypeface(bold);
 		txtcategoryname.setTypeface(normal);
@@ -186,6 +185,14 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		toast.setView(layout);
 
 		// set a message
+
+		heart1 = (ImageView) findViewById(R.id.heart1);
+		heart2 = (ImageView) findViewById(R.id.heart2);
+		heart3 = (ImageView) findViewById(R.id.heart3);
+
+		heart1.setVisibility(View.VISIBLE);
+		heart2.setVisibility(View.VISIBLE);
+		heart3.setVisibility(View.VISIBLE);
 
 		getquestions = db.getquestion(categoryname);
 
@@ -236,7 +243,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		adapterComment.add(cardModelComment);
 		mCardContainerC.setAdapter(adapterComment);
 
-		lifeline.setText("Life : " + mistake);
+		// lifeline.setText("Life : " + lives);
 
 		adView = new AdView(this);
 
@@ -337,9 +344,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 			wrongans++;
 			vibrate();
-			mistake--;
+			lives--;
 			combo--;
-			lifeline.setText("Life : " + mistake);
+			// lifeline.setText("Life : " + lives);
+			heartsToShow(lives);
 
 		}
 		new Thread(new Runnable() {
@@ -363,6 +371,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			toast.show();
 			Games.Achievements.increment(mGoogleApiClient,
 					getString(R.string.achievement_first_combo), (combo2 * 2));
+			wrongans--;
+			vibrate();
+			lives++;
+			heartsToShow(lives);
 		}
 	}
 
@@ -380,7 +392,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				db.close();
 				currentQuestion++;
 
-				if (mistake > 0) {
+				if (lives > 0) {
 
 					if (currentQuestion < totalQueLen) {
 						if (cbtimer) {
@@ -569,8 +581,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		public void onFinish() {
 			Log.w("Counter", " " + timerCount);
 			if (timerCount <= 2000) {
-				mistake--;
-				lifeline.setText("Life : " + mistake);
+				lives--;
+				heartsToShow(lives);
 				nextquestion(400);
 			}
 
@@ -903,5 +915,25 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	private boolean isSignedIn() {
 		return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+	}
+
+	public void heartsToShow(int life) {
+
+		heart1.setVisibility(View.INVISIBLE);
+		heart2.setVisibility(View.INVISIBLE);
+		heart3.setVisibility(View.INVISIBLE);
+
+		if (life == 1)
+			heart3.setVisibility(View.VISIBLE);
+		if (life == 2) {
+			heart3.setVisibility(View.VISIBLE);
+			heart2.setVisibility(View.VISIBLE);
+		}
+		if (life == 3) {
+			heart3.setVisibility(View.VISIBLE);
+			heart2.setVisibility(View.VISIBLE);
+			heart1.setVisibility(View.VISIBLE);
+		}
+
 	}
 }

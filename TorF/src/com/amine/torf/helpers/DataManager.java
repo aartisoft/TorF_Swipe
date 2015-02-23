@@ -8,7 +8,7 @@ public class DataManager {
 
 	public static ArrayList<CategoryList> categorynamelist;
 	public static String timer = "15";
-	public static int mistake = 3;
+	public static int lives = 3;
 	public static int noofquestions = 30;
 	public static int ratecounter = 5;
 	public static String appurl = "http://market.android.com/details?id=com.amine.torf";
