@@ -30,11 +30,10 @@ import com.google.android.gms.ads.InterstitialAd;
 
 public class Score extends Activity {
 
-	TextView txtright, txtheader;
+	TextView txtright, txtheader, txtShare;
 	String rightans = null;
 	String totalquestions = null;
 	Setting_preference pref;
-	Button btnMainMenu, btnShare, btnHighscore;
 	int numberques, rightanswer;
 	int result;
 	String category, standard;
@@ -74,7 +73,7 @@ public class Score extends Activity {
 		interstitial.setAdUnitId(DataManager.interstitialid);
 
 		// Create ad request.
-		AdRequest adRequest1 =  new AdRequest.Builder().addTestDevice(
+		AdRequest adRequest1 = new AdRequest.Builder().addTestDevice(
 				DataManager.deviceId).build();
 
 		// Begin loading your interstitial.
@@ -87,11 +86,6 @@ public class Score extends Activity {
 		db = new DbHighestScore(this);
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-		txtheader = (TextView) findViewById(R.id.textView);
-
-		txtheader.setTypeface(bold);
-		txtright.setTypeface(normal);
 
 		rightans = getIntent().getSerializableExtra("rightans").toString();
 		totalquestions = getIntent().getSerializableExtra("totalques")
@@ -108,35 +102,13 @@ public class Score extends Activity {
 
 		score = String.valueOf(result);
 
-		btnMainMenu = (Button) findViewById(R.id.btnMainMenu);
-		btnHighscore = (Button) findViewById(R.id.btnHighestscore);
-		btnShare = (Button) findViewById(R.id.btnShare);
-
 		txtright.setText("" + result);
 
-		btnMainMenu.setOnClickListener(new OnClickListener() {
+		txtShare = (TextView) findViewById(R.id.txtShare);
+		txtShare.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 
-				Intent iMainMenu = new Intent(Score.this, MainActivity.class);
-				finish();
-				startActivity(iMainMenu);
-
-			}
-		});
-
-		btnHighscore.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-
-				Intent iMainMenu1 = new Intent(Score.this, Highest_Score.class);
-				startActivity(iMainMenu1);
-			}
-		});
-
-		btnShare.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
 				Intent sharingIntent = new Intent(Intent.ACTION_SEND);
 				sharingIntent.setType("text/plain");
 				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,

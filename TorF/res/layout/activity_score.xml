@@ -17,72 +17,61 @@
         android:orientation="horizontal" >
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header"
+        android:background="@drawable/header" >
+
+        <Button
+            android:id="@+id/btnback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/back_icon" />
+
+        <TextView
+            android:id="@+id/txtheader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Your score "
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size" />
+    </RelativeLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:background="@drawable/header"
         android:gravity="center"
-        android:text="Score"
-        android:textColor="@color/White"
-        android:textSize="20dp"
-        android:visibility="visible" />
+        android:orientation="vertical" >
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
+        <TextView
+            android:id="@+id/txtright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top"
+            android:background="@drawable/score_board"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:text="15"
+            android:textColor="@color/Black"
+            android:textSize="25dp" />
 
-            <TextView
-                android:id="@+id/txtright"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|top"
-                android:layout_margin="20dp"
-                android:background="@drawable/score_board"
-                android:gravity="center"
-                android:text="15"
-                android:textColor="@color/Black"
-                android:textSize="25dp" />
+        <TextView
+            android:id="@+id/txtShare"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="@dimen/button_margin"
+            android:background="@drawable/bordeaux"
+            android:gravity="center"
+            android:text="share"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size"
+            android:typeface="sans" />
 
-            <Button
-                android:id="@+id/btnMainMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@drawable/home_btn"
-                android:gravity="center"
-                android:padding="10dp"
-                android:textColor="@color/White" />
-
-            <Button
-                android:id="@+id/btnHighestscore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@drawable/scoreboard_btn"
-                android:padding="10dp"
-                android:textColor="@color/White" />
-
-            <Button
-                android:id="@+id/btnShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@drawable/share_btn_2"
-                android:padding="10dp"
-                android:textColor="@color/White" />
-        </LinearLayout>
-    </ScrollView>
-
-   
+    </LinearLayout>
 
 </LinearLayout>

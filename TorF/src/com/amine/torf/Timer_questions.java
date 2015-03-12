@@ -2,6 +2,7 @@ package com.amine.torf;
 
 import java.util.List;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,9 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +58,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			combo = 0;
 	String right, wrong, next;
 	DataBaseHelper db;
-	TextView txtcategoryname, tv, tanoofque;
+	TextView txtcategoryname, tvTimer, tanoofque;
 	ImageView heart1, heart2, heart3;
 	static int currentQuestion = 0;
 	MediaPlayer mp;
@@ -92,6 +96,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	public long timerCount = 15000;
 	private String TAG = "TRF QUESTIONS";
+	private ProgressBar pb;
 
 	@SuppressLint("DefaultLocale")
 	@Override
@@ -116,14 +121,15 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		cardModelQuestion = new CardModel("");
 		cardModelComment = new CardModel("");
 
+		pb = (ProgressBar) findViewById(R.id.progressBarToday);
+		tvTimer = (TextView) findViewById(R.id.textViewTimer);
+		
 		mCardContainerQ = (CardContainer) findViewById(R.id.layoutCardQuestion);
 		mCardContainerC = (CardContainer) findViewById(R.id.layoutCardComment);
 
 		normal = Typeface.createFromAsset(getAssets(), "normal.ttf");
 		bold = Typeface.createFromAsset(getAssets(), "bold.ttf");
 
-		tv = (TextView) findViewById(R.id.tv);
-		tv.setText(" ");
 		db = new DataBaseHelper(getApplicationContext());
 
 		pref = new Setting_preference(getApplicationContext());
@@ -146,7 +152,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			timer = new MyCounter(savedtimer * 1000, 1000);
 			timer.start();
 		} else {
-			tv.setVisibility(View.INVISIBLE);
+			tvTimer.setVisibility(View.INVISIBLE);
 			btntimer.setVisibility(View.GONE);
 			lltimer.setVisibility(View.GONE);
 		}
@@ -154,6 +160,25 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		currentQuestion = 0;
 		rightans = 0;
 		wrongans = 0;
+
+	
+
+		ObjectAnimator animation = ObjectAnimator.ofInt (R.id.progressBarToday, "progress", 1, 500);
+		animation.setDuration (5000); //in milliseconds
+		animation.setInterpolator (new DecelerateInterpolator ());
+		animation.start ();
+		
+		/*Animation an = new RotateAnimation(0.0f, 40.0f, 50f, 50f);
+		an.setFillAfter(true);
+		an.setDuration(Integer.parseInt(DataManager.timer) * 1000);
+		pb.startAnimation(an);*/
+
+		LayoutInflater inflater = getLayoutInflater();
+
+		View layout = inflater.inflate(R.layout.custom_toast,
+				(ViewGroup) findViewById(R.id.custom_toast_layout_id));
+
+		tvTimer.setText(" ");
 
 		btnpass = (Button) this.findViewById(R.id.btnskip);
 		txtcategoryname = (TextView) this.findViewById(R.id.txtcategoryname);
@@ -168,13 +193,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		btntimer.setTypeface(bold);
 		btnpass.setTypeface(bold);
 		txtcategoryname.setTypeface(normal);
-		tv.setTypeface(bold);
+		tvTimer.setTypeface(bold);
 		totalQueLen = 20;
-
-		LayoutInflater inflater = getLayoutInflater();
-
-		View layout = inflater.inflate(R.layout.custom_toast,
-				(ViewGroup) findViewById(R.id.custom_toast_layout_id));
 
 		// set a dummy image
 
@@ -346,7 +366,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			vibrate();
 			lives--;
 			combo--;
-			// lifeline.setText("Life : " + lives);
 			heartsToShow(lives);
 
 		}
@@ -600,11 +619,11 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 			Integer seconds = (cd_secs % 3600) % 60;
 
-			tv.setTextColor(Color.BLACK);
-			tv.setText("Timer  : " + String.format("%02d", seconds));
+			tvTimer.setTextColor(Color.BLACK);
+			tvTimer.setText(String.format("%02d", seconds));
 
 			if (seconds < 6) {
-				tv.setTextColor(Color.RED);
+				tvTimer.setTextColor(Color.RED);
 			}
 		}
 

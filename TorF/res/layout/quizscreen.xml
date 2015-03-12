@@ -38,17 +38,10 @@
         android:layout_weight="0.11"
         android:baselineAligned="false"
         android:collapseColumns="3" >
+﻿
 
-        <LinearLayout
-            android:id="@+id/layoutToast"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <TextView
+        <!--
+                 <TextView
                 android:id="@+id/tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -57,8 +50,10 @@
                 android:text="Timer : "
                 android:textColor="@color/Black"
                 android:textSize="15dp" />
+        -->
 
-            <!--
+
+        <!--
                  <TextView
                 android:id="@+id/txtlife"
                 android:layout_width="match_parent"
@@ -68,7 +63,45 @@
                 android:text="Life : "
                 android:textColor="@color/Black"
                 android:textSize="15dp" />
-            -->
+        -->
+
+        <RelativeLayout
+            android:id="@+id/layoutProgressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:gravity="start|center" >
+
+            <ProgressBar
+                android:id="@+id/progressBarToday"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                android:max="500"
+                android:progress="0"
+                android:progressDrawable="@drawable/circular_progress" />
+
+            <TextView
+                android:id="@+id/textViewTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="15"
+                android:textColor="@color/Black"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutToast"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:gravity="right|center"
+            android:orientation="horizontal" >
+﻿
 
             <ImageView
                 android:id="@+id/heart1"
@@ -76,7 +109,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:adjustViewBounds="true"
-                android:alpha=".75"
                 android:background="@drawable/heart"
                 android:gravity="center|end|top"
                 android:maxHeight="80dp"
@@ -91,7 +123,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:adjustViewBounds="true"
-                android:alpha=".75"
                 android:background="@drawable/heart"
                 android:gravity="center|end|top"
                 android:maxHeight="80dp"
@@ -105,9 +136,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:alpha=".75"
                 android:background="@drawable/heart"
-                android:gravity="center|end|top"
+                android:gravity="end|top"
                 android:maxHeight="80dp"
                 android:maxWidth="80dp"
                 android:minHeight="30dp"
