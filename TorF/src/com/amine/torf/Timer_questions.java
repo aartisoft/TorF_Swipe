@@ -123,7 +123,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		pb = (ProgressBar) findViewById(R.id.progressBarToday);
 		tvTimer = (TextView) findViewById(R.id.textViewTimer);
-		
+
 		mCardContainerQ = (CardContainer) findViewById(R.id.layoutCardQuestion);
 		mCardContainerC = (CardContainer) findViewById(R.id.layoutCardComment);
 
@@ -161,17 +161,18 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		rightans = 0;
 		wrongans = 0;
 
-	
+		ObjectAnimator animation = ObjectAnimator.ofInt(R.id.progressBarToday,
+				"progress", 1, 500);
+		animation.setDuration(5000); // in milliseconds
+		animation.setInterpolator(new DecelerateInterpolator());
+		animation.start();
 
-		ObjectAnimator animation = ObjectAnimator.ofInt (R.id.progressBarToday, "progress", 1, 500);
-		animation.setDuration (5000); //in milliseconds
-		animation.setInterpolator (new DecelerateInterpolator ());
-		animation.start ();
-		
-		/*Animation an = new RotateAnimation(0.0f, 40.0f, 50f, 50f);
-		an.setFillAfter(true);
-		an.setDuration(Integer.parseInt(DataManager.timer) * 1000);
-		pb.startAnimation(an);*/
+		/*
+		 * Animation an = new RotateAnimation(0.0f, 40.0f, 50f, 50f);
+		 * an.setFillAfter(true);
+		 * an.setDuration(Integer.parseInt(DataManager.timer) * 1000);
+		 * pb.startAnimation(an);
+		 */
 
 		LayoutInflater inflater = getLayoutInflater();
 
@@ -386,13 +387,14 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	private void pushIncrementalAchievements(int combo2) {
 
-		if (combo2 <= 30 && combo2 % 3 == 0) {
+		if (combo2 != 0 && combo2 <= 30 && combo2 % 3 == 0) {
 			toast.show();
 			Games.Achievements.increment(mGoogleApiClient,
 					getString(R.string.achievement_first_combo), (combo2 * 2));
 			wrongans--;
 			vibrate();
-			lives++;
+			if (lives < 3)
+				lives++;
 			heartsToShow(lives);
 		}
 	}
