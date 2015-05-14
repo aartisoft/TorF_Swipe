@@ -29,12 +29,7 @@
     <string name="achievement_experienced">CgkIlpu6lIcREAIQDA</string>
     <string name="achievement_advanced">CgkIlpu6lIcREAIQDQ</string>
     <string name="event_true_answers">CgkIlpu6lIcREAIQAQ</string>
-    <string name="achievement_first_combo">CgkIlpu6lIcREAIQDg</string>
-    <string name="achievement_second_combo">CgkIlpu6lIcREAIQDw</string>
-    <string name="achievement_third_combo">CgkIlpu6lIcREAIQEA</string>
-    <string name="achievement_fourth_combo">CgkIlpu6lIcREAIQEQ</string>
-    <string name="achievement_fifth_combo">CgkIlpu6lIcREAIQEg</string>
-    <string name="achievement_last_combo">CgkIlpu6lIcREAIQEw</string>
+    <string name="achievement_knowledge_level">CgkIlpu6lIcREAIQFA</string>
     <string name="leaderboard_leader_board_beginners">CgkIlpu6lIcREAIQCA</string>
     <string name="leaderboard_leader_board_advanced">CgkIlpu6lIcREAIQCQ</string>
 

@@ -90,7 +90,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	CardModel cardModelQuestion, cardModelComment;
 	SimpleCardStackAdapter adapterQuestion, adapterComment;
 	LinearLayout linearBoundQ, linearBoundC, linearButtons;
-	Toast toast;
+	Toast toastImage;
 	AccomplishmentsOutbox mOutbox = new AccomplishmentsOutbox();
 	private GoogleApiClient mGoogleApiClient;
 
@@ -200,10 +200,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		// set a dummy image
 
 		// Toast...
-		toast = new Toast(getApplicationContext());
-		toast.setGravity(Gravity.TOP, 0, 90);
-		toast.setDuration(Toast.LENGTH_SHORT);
-		toast.setView(layout);
+		toastImage = new Toast(getApplicationContext());
+		toastImage.setGravity(Gravity.TOP, 0, 90);
+		toastImage.setDuration(Toast.LENGTH_SHORT);
+		toastImage.setView(layout);
 
 		// set a message
 
@@ -247,7 +247,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			}
 		});
 
-		cardModelComment.setTitle("Swipe right if the answer is wright");
+		cardModelComment.setTitle("Swipe right if it is the good answer");
 
 		cardModelComment
 				.setOnCardDimissedListener(new CardModel.OnCardDimissedListener() {
@@ -387,10 +387,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	private void pushIncrementalAchievements(int combo2) {
 
-		if (combo2 != 0 && combo2 <= 30 && combo2 % 3 == 0) {
-			toast.show();
+		if (combo2 != 0) {
+		//	toastImage.show();
 			Games.Achievements.increment(mGoogleApiClient,
-					getString(R.string.achievement_first_combo), (combo2 * 2));
+					getString(R.string.achievement_knowledge_level), combo2);
 			wrongans--;
 			vibrate();
 			if (lives < 3)
@@ -761,42 +761,13 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		}
 
-		if (mOutbox.achievement_combo_first) {
+		if (mOutbox.achievement_knowledge_level) {
 
 			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_first_combo));
+					getString(R.string.achievement_knowledge_level));
 
 		}
-		if (mOutbox.achievement_combo_second) {
 
-			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_second_combo));
-
-		}
-		if (mOutbox.achievement_combo_third) {
-
-			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_third_combo));
-
-		}
-		if (mOutbox.achievement_combo_fourth) {
-
-			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_fourth_combo));
-
-		}
-		if (mOutbox.achievement_combo_fifth) {
-
-			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_fifth_combo));
-
-		}
-		if (mOutbox.achievement_combo_last) {
-
-			Games.Achievements.unlock(mGoogleApiClient,
-					getString(R.string.achievement_last_combo));
-
-		}
 		/*
 		 * if (mOutbox.mPrimeAchievement) {
 		 * Games.Achievements.unlock(mGoogleApiClient,
@@ -855,12 +826,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		boolean achievement_experienced = false;
 		boolean achievement_advanced = false;
 
-		boolean achievement_combo_first = false;
-		boolean achievement_combo_second = false;
-		boolean achievement_combo_third = false;
-		boolean achievement_combo_fourth = false;
-		boolean achievement_combo_fifth = false;
-		boolean achievement_combo_last = false;
+		boolean achievement_knowledge_level = false;
 
 		int score = 0;
 		int mEasyModeScore = -1;
@@ -872,9 +838,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 					&& !achievement_intermediate && score == 0
 					&& !achievement_experienced && !achievement_advanced
 					&& mEasyModeScore < 0 && mHardModeScore < 0
-					&& !achievement_combo_first && !achievement_combo_second
-					&& !achievement_combo_third && !achievement_combo_fourth
-					&& !achievement_combo_fifth && !achievement_combo_last;
+					&& !achievement_knowledge_level;
 		}
 
 		public void saveLocal(Context ctx) {

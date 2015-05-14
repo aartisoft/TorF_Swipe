@@ -32,7 +32,7 @@ public class ShowCase extends Activity {
 
         mCardContainerIntro = (CardContainer) findViewById(R.id.layoutCardQuestion);
         cardModelIntro
-                .setTitle(" Swipe right if the answer is wright \n left if it is false  ");
+                .setTitle(" Swipe right if the answer is true \n left if it is false  ");
 
         cardModelIntro
                 .setOnCardDimissedListener(new CardModel.OnCardDimissedListener() {
