@@ -26,7 +26,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	private final Context mContext;
 
 	// Contacts table name
-	private static final String TABLE_CONTACTS = "quiz";
+	private static final String TABLE_QUIZ = "quiz";
 	private static final String KEY_ID = "id";
 	private static final String KEY_QUESTION = "question";
 	private static final String KEY_ISTRUE = "isTrue";
@@ -129,7 +129,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		values.put(KEY_COMMENT, contact.get_comment());
 
 		// Inserting Row
-		db.insert(TABLE_CONTACTS, null, values);
+		db.insert(TABLE_QUIZ, null, values);
 		db.close(); // Closing database connection
 	}
 
@@ -154,7 +154,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		// Select All Query
 
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_CONTACTS, null, null);
+		db.delete(TABLE_QUIZ, null, null);
 
 		db.close();
 
@@ -164,7 +164,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	public List<QuizPojo> getAllContacts() {
 		List<QuizPojo> contactList = new ArrayList<QuizPojo>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;
+		String selectQuery = "SELECT  * FROM " + TABLE_QUIZ;
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -194,7 +194,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	public List<QuizPojo> getcategory() {
 		List<QuizPojo> categoryList = new ArrayList<QuizPojo>();
 		// Select All Query
-		String selectQuery = "SELECT DISTINCT category FROM " + TABLE_CONTACTS;
+		String selectQuery = "SELECT DISTINCT category FROM " + TABLE_QUIZ;
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -220,9 +220,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		List<QuizPojo> questionList = new ArrayList<QuizPojo>();
 		int isAnswered = 0;
 
-		String sql = "select count(*) from " + TABLE_CONTACTS
+		String sql = "select count(*) from " + TABLE_QUIZ
 				+ " where isAnswered=1";
-		String sql2 = "select count(*) from " + TABLE_CONTACTS;
+		String sql2 = "select count(*) from " + TABLE_QUIZ;
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		Cursor cursor1 = db.rawQuery(sql, null);
@@ -244,7 +244,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 			isAnswered = 0;
 		// Select All Query
 		String selectQuery = "SELECT DISTINCT id,question, isTrue, difficulty, category , comment FROM "
-				+ TABLE_CONTACTS
+				+ TABLE_QUIZ
 				+ " where "
 				+ KEY_CATEGORYNAME
 				+ "= ? and isAnswered=" + isAnswered + " ORDER BY RANDOM()";
@@ -274,7 +274,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	public int getContactsCount() {
 
-		String countQuery = "SELECT * FROM " + TABLE_CONTACTS;
+		String countQuery = "SELECT * FROM " + TABLE_QUIZ;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
 
@@ -284,7 +284,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	public int getcategorycount(String categoryname) {
 
 		String selectQuery = "SELECT DISTINCT question, isTrue, difficulty, category,comment FROM"
-				+ TABLE_CONTACTS + " where " + KEY_CATEGORYNAME + "= ?";
+				+ TABLE_QUIZ + " where " + KEY_CATEGORYNAME + "= ?";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -301,7 +301,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	public void insertIsanswered(int id) {
 
-		String sql = "update " + TABLE_CONTACTS
+		String sql = "update " + TABLE_QUIZ
 				+ " set isAnswered=1 where id = " + id;
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.execSQL(sql);

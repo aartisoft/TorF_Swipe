@@ -137,7 +137,7 @@ public class Category extends Activity {
 					i = new Intent(Category.this, ShowCase.class);
 				} else
 					i = new Intent(Category.this, Timer_questions.class);
-				i.putExtra("categoryname", "Sports");
+				i.putExtra("categoryname", "Sport");
 				finish();
 				startActivity(i);
 			}
@@ -147,8 +147,8 @@ public class Category extends Activity {
 		boolean isSigned = intent.getExtras().getBoolean("signedIn");
 		if (isSigned == false)
 			Toast.makeText(getApplicationContext(),
-					"Please sign in first, to upload your scores", Toast.LENGTH_LONG)
-					.show();
+					"Please sign in first, to upload your scores",
+					Toast.LENGTH_LONG).show();
 	}
 
 	@Override

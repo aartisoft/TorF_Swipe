@@ -69,7 +69,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 	String no_of_questions, strtimer;
 	long savedtimer;
 	int totalQueLen;
-	boolean cbvibrate, cbtimer;
+	boolean cbvibrate, cbtimer, cbhardmode;
 	Vibrator vibe;
 	String categoryname;
 	int lives = DataManager.lives;
@@ -145,6 +145,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 		cbvibrate = prefs.getBoolean("cbvibrate", true);
 		cbtimer = prefs.getBoolean("cbtimer", true);
+		cbhardmode = prefs.getBoolean("cbhardmode", true);
 		btntimer = (Button) this.findViewById(R.id.btntimer);
 		lltimer = (LinearLayout) this.findViewById(R.id.lltimer);
 
@@ -195,7 +196,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		btnpass.setTypeface(bold);
 		txtcategoryname.setTypeface(normal);
 		tvTimer.setTypeface(bold);
-		totalQueLen = 20;
+		if (cbhardmode)
+			totalQueLen = 30;
+		else
+			totalQueLen = 20;
 
 		// set a dummy image
 
@@ -293,7 +297,7 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 
 	}
 
-	void checkForAchievements(int finalScore, int combo) {
+	void checkForAchievements(int finalScore, int isDifficult) {
 		// Check if each condition is met; if so, unlock the corresponding
 
 		// achievement.
@@ -329,11 +333,12 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		}
 		if (isSignedIn())
 			pushAccomplishments();
-		if (finalScore <= 20) {
-			mOutbox.mEasyModeScore = finalScore;
-		} else {
-			mOutbox.mHardModeScore = finalScore;
-		}
+
+		// TODO : add when difficulty is implemented
+		/*
+		 * if (finalScore <= 20) { mOutbox.mEasyModeScore = finalScore; } else {
+		 * mOutbox.mHardModeScore = finalScore; }
+		 */
 
 	}
 
@@ -342,9 +347,8 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 		if ((isTrueAnswer == 1 && swipedRight)
 				|| (isTrueAnswer == 0 && !swipedRight)) {
 			rightans++;
-			combo++;
 			if (isSignedIn()) {
-				pushIncrementalAchievements(combo);
+				pushIncrementalAchievements(1);
 				checkForAchievements(rightans, combo);
 			}
 			linearBoundQ.setBackgroundColor(Color.GREEN);
@@ -366,10 +370,10 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 			wrongans++;
 			vibrate();
 			lives--;
-			combo--;
 			heartsToShow(lives);
 
 		}
+
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
@@ -383,20 +387,31 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 				}
 			}
 		}).start();
+
+		if (lives == 0) {
+			// GAME OVER
+
+			Intent i = new Intent(Timer_questions.this, Score.class);
+			i.putExtra("rightans", rightans);
+			i.putExtra("totalques", db.getContactsCount());
+			i.putExtra("category", category);
+			finish();
+			startActivity(i);
+
+		}
 	}
 
 	private void pushIncrementalAchievements(int combo2) {
 
-		if (combo2 != 0) {
-		//	toastImage.show();
-			Games.Achievements.increment(mGoogleApiClient,
-					getString(R.string.achievement_knowledge_level), combo2);
-			wrongans--;
-			vibrate();
-			if (lives < 3)
-				lives++;
-			heartsToShow(lives);
-		}
+		// toastImage.show();
+		Games.Achievements.increment(mGoogleApiClient,
+				getString(R.string.achievement_knowledge_level), combo2);
+		wrongans--;
+		vibrate();
+		if (lives < 3)
+			lives++;
+		heartsToShow(lives);
+
 	}
 
 	public void nextquestion(int SPLASHTIME) {
@@ -428,10 +443,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 							timer.cancel();
 						}
 
-						// update leaderboards
-
-						// push those accomplishments to the cloud, if signed in
-
 						/*
 						 * Intent iScore = new Intent(Timer_questions.this,
 						 * Score.class); iScore.putExtra("rightans", rightans);
@@ -445,10 +456,6 @@ public class Timer_questions extends Activity implements ConnectionCallbacks,
 					if (cbtimer) {
 						timer.cancel();
 					}
-
-					// update leaderboards
-
-					// push those accomplishments to the cloud, if signed in
 
 					/*
 					 * Intent iScore = new Intent(Timer_questions.this,

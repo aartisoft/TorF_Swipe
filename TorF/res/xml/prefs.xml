@@ -10,18 +10,18 @@
      android:summary="On/Off"
      android:defaultValue="true" 
      android:title="Timer On / Off" />
-     
-  <CheckBoxPreference
-     android:key="cbsound"
-    android:defaultValue="true" 
-     android:summary="On/Off"
-     android:title="Sound On / Off" />
   
   <CheckBoxPreference
      android:key="cbvibrate"
      android:summary="On/Off"
      android:defaultValue="true" 
      android:title="Vibrate On / Off" />
+  
+  <CheckBoxPreference
+     android:key="cbhardmode"
+     android:summary="On/Off"
+     android:defaultValue="false" 
+     android:title="Hard Mode  On / Off" />
   
   </PreferenceCategory>
   

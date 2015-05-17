@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.amine.torf.helpers.DataManager;
 import com.amine.torf.helpers.DbHighestScore;
 import com.amine.torf.pojo.Scoredata;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -30,12 +31,11 @@ import com.google.android.gms.ads.InterstitialAd;
 
 public class Score extends Activity {
 
-	TextView txtright, txtheader, txtShare;
+	TextView txtright, txtheader, txtShare, txtPlayAgain;
 	String rightans = null;
 	String totalquestions = null;
 	Setting_preference pref;
 	int numberques, rightanswer;
-	int result;
 	String category, standard;
 	String score, name;
 	SharedPreferences prefs;
@@ -79,6 +79,12 @@ public class Score extends Activity {
 		// Begin loading your interstitial.
 		interstitial.loadAd(adRequest1);
 
+		interstitial.setAdListener(new AdListener() {
+			public void onAdLoaded() {
+				displayInterstitial();
+			}
+		});
+
 		txtright = (TextView) findViewById(R.id.txtright);
 		setuser = new Setting_preference(this);
 
@@ -95,14 +101,12 @@ public class Score extends Activity {
 
 		rightanswer = Integer.parseInt(rightans);
 
-		result = (rightanswer);
-
 		HashMap<String, String> user = pref.getUserDetails();
 		name = user.get(Setting_preference.KEY_USERNAME);
 
-		score = String.valueOf(result);
+		score = String.valueOf(rightanswer);
 
-		txtright.setText("" + result);
+		txtright.setText("" + rightanswer);
 
 		txtShare = (TextView) findViewById(R.id.txtShare);
 		txtShare.setOnClickListener(new OnClickListener() {
@@ -110,18 +114,19 @@ public class Score extends Activity {
 			public void onClick(View view) {
 
 				Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-				sharingIntent.setType("text/plain");
+				sharingIntent.setType("text/html");
 				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-						DataManager.share);
-				// sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-				// share);
+						DataManager.myScore + "'" + score + "'"
+								+ DataManager.share);
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+						DataManager.subject);
 				startActivity(Intent
 						.createChooser(sharingIntent, "Share using"));
 
 			}
 		});
 
-		showDialog(DIALOG_LOGIN);
+		// showDialog(DIALOG_LOGIN);
 
 	}
 
